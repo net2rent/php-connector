@@ -1,14 +1,17 @@
 <?php
 
 require_once dirname(__FILE__).'/lib/Net2rent/Connector.php';
+
+$config = parse_ini_file("config.ini", true);
+
 $connector = new Net2rent\Connector(array(
-	'apiBaseUrl' => 'http://hubtesting.n2rent.com',
-	'apiUser' => 'portal1',
-	'apiPassword' => 'portal1',
-        'lg' => 'ca'
+    'apiBaseUrl' => $config['api_connection']['apiBaseUrl'],
+    'apiUser' => $config['api_connection']['apiUser'],
+    'apiPassword' => $config['api_connection']['apiPassword'],
+    'lg' => $config['language']['lg']
 ));
 
-$page_size = 15;
+$page_size = $config['portal']['elementsperpage'];
 $page_number = (isset($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
 
 $properties = array();
@@ -126,7 +129,7 @@ catch(Exception $e)
                     ?>
                         <li style="clear: both;">
                             <a href="detail.php?id=<?php echo $property['id']; ?>"><?php echo $property['name']; ?></a>
-                            <p><?php echo $property['description']['es']; ?></p>
+                            <p><?php echo $property['description'][$config['language']['lg']]; ?></p>
                             <img src="<?php echo $property['image']; ?>" alt="<?php echo $property['name']; ?>" title="<?php echo $property['name']; ?>">
                         </li>
                     <?php

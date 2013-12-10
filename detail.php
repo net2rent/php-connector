@@ -2,11 +2,13 @@
 
 require_once dirname(__FILE__).'/lib/Net2rent/Connector.php';
 
+$config = parse_ini_file("config.ini", true);
+
 $connector = new Net2rent\Connector(array(
-    'apiBaseUrl' => 'http://hubtesting.n2rent.com',
-    'apiUser' => 'portal1',
-    'apiPassword' => 'portal1',
-    'lg' => 'ca'
+    'apiBaseUrl' => $config['api_connection']['apiBaseUrl'],
+    'apiUser' => $config['api_connection']['apiUser'],
+    'apiPassword' => $config['api_connection']['apiPassword'],
+    'lg' => $config['language']['lg']
 ));
 
 try {
