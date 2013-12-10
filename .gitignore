@@ -1,0 +1,6 @@
+*.lock
+vendor/*
+.DS_Store
+Thumbs.db
+.svn
+nbproject
