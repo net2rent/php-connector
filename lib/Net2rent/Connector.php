@@ -75,6 +75,10 @@ class Connector
             $params['date_in'] = $this->checkDateFormat($options['checkin']);
             $params['date_out'] = $this->checkDateFormat($options['checkout']);
         }
+        if(isset($options['city']))
+        {
+            $params['city'] = $options['city'];
+        }
         $params['lg'] = $this->lg;
         $typologies = $this->api(sprintf($endPoint.'?%s', $this->apiUser, http_build_query($params)));
         $typologiesTotal = $this->api(sprintf($endPoint.'/size?%s', $this->apiUser, http_build_query($params)));
@@ -187,7 +191,7 @@ class Connector
             );
         }
 
-        $property[] = array(
+        $property = array(
             'id' => $typology['id'],
             'name' => $typology['name'],
             'room_number' => $typology['room_number'],

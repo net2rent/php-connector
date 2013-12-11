@@ -24,6 +24,7 @@ try {
         $options['checkin'] = $_REQUEST['checkin'];
         $options['checkout'] = (isset($_REQUEST['checkout'])) ? $_REQUEST['checkout'] : null;;
     }
+    $options['city'] = (isset($_GET['city']))?$_GET['city']:null;
 
     $properties = $connector->getProperties($options);
 }
@@ -83,9 +84,9 @@ catch(Exception $e)
                     <select name="city">
                         <option value="">Any</option>
                         <?php
-                            foreach($cities as $city_key => $city_name)
+                            foreach($cities as $city)
                             {
-                                echo "<option value=\"".$city_key."\">".$city_name."</option>";
+                                printf('<option value="%1$s" %2$s>%1$s</option>', $city, (isset($_GET['city']) && $_GET['city'] == $city) ? 'selected="selected"' : '');
                             }
                         ?>
                     </select>

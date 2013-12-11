@@ -20,7 +20,7 @@ catch(Exception $e) {
             print("Forbidden access <br/>\n");
             break;
         default:
-            print("Error");
+            die("Error");
     }
 }
 
@@ -30,10 +30,43 @@ catch(Exception $e) {
 <head>
 	<meta charset="UTF-8">
 	<title>N2Rent | Connector example</title>
+        <style type="text/css">
+        li { float: left; margin: 5px; clear: both;}
+        img { float: left; width: 200px; clear: both; margin: 10px 0px; }
+        h2, a {color: #3E78FD;}
+    </style>
 </head>
 <body>
 	<div>
-		<?php var_dump($property); ?>
+            <a href="list.php">Back</a>
+            <h2><?php echo $property['name']; ?></h2>
+            <img src="<?php echo $property['images'][key($property['images'])]['image']; ?>" alt="<?php echo $property['name']; ?>" title="<?php echo $property['name']; ?>">
+            <ul>
+                <li>Room number: <?php echo $property['room_number']; ?></li>
+                <li>Toilets: <?php echo $property['toilets']; ?></li>
+                <li>Description: <?php echo $property['description'][$config['language']['lg']]; ?></li>
+                <li>Address:
+                    <ul>
+                        <li><?php echo $property['address']['address']; ?></li>
+                        <li><?php echo $property['address']['zone']; ?></li>
+                        <li><?php echo $property['address']['urbanization']; ?></li>
+                        <li><?php echo $property['address']['zipcode']; ?></li>
+                        <li><?php echo $property['address']['city']; ?></li>
+                        <li><?php echo $property['address']['province']; ?></li>
+                        <li><?php echo $property['address']['country']; ?></li>
+                    </ul>
+                </li>
+                <li>Equipment: 
+                    <ul>
+                        <?php 
+                            foreach ($property['equipment'] as $name_eq => $val_eq)
+                            {
+                                echo "<li>".ucfirst($name_eq).": ".(($val_eq == 1)?"Yes":"No")."</li>";
+                            }
+                        ?>
+                    </ul>
+                </li>
+            </ul>
 	</div>
 </body>
 </html>
