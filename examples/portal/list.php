@@ -1,17 +1,17 @@
 <?php
 
-require_once dirname(__FILE__).'/vendor/autoload.php';
+require_once dirname(__FILE__).'/../../vendor/autoload.php';
 
-$config = parse_ini_file("config.ini", true);
+$config = include(dirname(__FILE__).'/config.php');
 
 $connector = new Net2rent\Connector(array(
-    'apiBaseUrl' => $config['api_connection']['apiBaseUrl'],
-    'apiUser' => $config['api_connection']['apiUser'],
-    'apiPassword' => $config['api_connection']['apiPassword'],
-    'lg' => $config['language']['lg']
+    'apiBaseUrl' => $config['apiConnection']['apiBaseUrl'],
+    'apiUser' => $config['apiConnection']['apiUser'],
+    'apiPassword' => $config['apiConnection']['apiPassword'],
+    'lg' => $config['language']
 ));
 
-$page_size = $config['portal']['elementsperpage'];
+$page_size = $config['itemsperpage'];
 $page_number = (isset($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
 
 $properties = array();
@@ -130,7 +130,7 @@ catch(Exception $e)
                     ?>
                         <li style="clear: both;">
                             <a href="detail.php?id=<?php echo $property['id']; ?>"><?php echo $property['name']; ?></a>
-                            <p><?php echo $property['description'][$config['language']['lg']]; ?></p>
+                            <p><?php echo $property['description'][$config['language']]; ?></p>
                             <img src="<?php echo $property['image']; ?>" alt="<?php echo $property['name']; ?>" title="<?php echo $property['name']; ?>">
                         </li>
                     <?php

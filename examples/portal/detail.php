@@ -1,14 +1,14 @@
 <?php
 
-require_once dirname(__FILE__).'/lib/Net2rent/Connector.php';
+require_once dirname(__FILE__).'/../../vendor/autoload.php';
 
-$config = parse_ini_file("config.ini", true);
+$config = include(dirname(__FILE__).'/config.php');
 
 $connector = new Net2rent\Connector(array(
-    'apiBaseUrl' => $config['api_connection']['apiBaseUrl'],
-    'apiUser' => $config['api_connection']['apiUser'],
-    'apiPassword' => $config['api_connection']['apiPassword'],
-    'lg' => $config['language']['lg']
+    'apiBaseUrl' => $config['apiConnection']['apiBaseUrl'],
+    'apiUser' => $config['apiConnection']['apiUser'],
+    'apiPassword' => $config['apiConnection']['apiPassword'],
+    'lg' => $config['language']
 ));
 
 try {
@@ -20,7 +20,7 @@ catch(Exception $e) {
             print("Forbidden access <br/>\n");
             break;
         default:
-            die("Error");
+            die("ERROR: ".$e->getMessage());
     }
 }
 
@@ -40,11 +40,11 @@ catch(Exception $e) {
 	<div>
             <a href="list.php">Back</a>
             <h2><?php echo $property['name']; ?></h2>
-            <img src="<?php echo $property['images'][key($property['images'])]['image']; ?>" alt="<?php echo $property['name']; ?>" title="<?php echo $property['name']; ?>">
+            <img src="<?php echo (count($property['images'])) ? $property['images'][key($property['images'])]['image'] : ''; ?>" alt="<?php echo $property['name']; ?>" title="<?php echo $property['name']; ?>">
             <ul>
                 <li>Room number: <?php echo $property['room_number']; ?></li>
                 <li>Toilets: <?php echo $property['toilets']; ?></li>
-                <li>Description: <?php echo $property['description'][$config['language']['lg']]; ?></li>
+                <li>Description: <?php echo $property['description'][$config['language']]; ?></li>
                 <li>Address:
                     <ul>
                         <li><?php echo $property['address']['address']; ?></li>
@@ -56,9 +56,9 @@ catch(Exception $e) {
                         <li><?php echo $property['address']['country']; ?></li>
                     </ul>
                 </li>
-                <li>Equipment: 
+                <li>Equipment:
                     <ul>
-                        <?php 
+                        <?php
                             foreach ($property['equipment'] as $name_eq => $val_eq)
                             {
                                 echo "<li>".ucfirst($name_eq).": ".(($val_eq == 1)?"Yes":"No")."</li>";
