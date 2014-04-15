@@ -1,6 +1,6 @@
 {
     "name": "net2rent/php-connector",
-    "description": "Net2rent PHP Connector",
+    "description": "PHP connector to consume net2rent API",
     "type": "library",
     "keywords": [
         "net2rent",

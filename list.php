@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/lib/Net2rent/Connector.php';
+require_once dirname(__FILE__).'/vendor/autoload.php';
 
 $config = parse_ini_file("config.ini", true);
 
@@ -109,12 +109,12 @@ catch(Exception $e)
             </form>
         </div>
         <div>
-            <?php 
+            <?php
                 $totalPages = ceil((int)$properties['total']/(int)$page_size);
-                printf('<p>Page %d of %d</p>', $page_number, $totalPages); 
+                printf('<p>Page %d of %d</p>', $page_number, $totalPages);
             ?>
             <ul>
-                <?php 
+                <?php
                     for($i=0;$i<$totalPages;$i++)
                     {
                         printf('<li><a class="%2$s" href="?page=%1$d">%1$d</a></li>', $i+1, ($i+1 == $page_number) ? 'selected' : '');
