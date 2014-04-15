@@ -5,7 +5,7 @@ class Publisher extends AbstractConnector
 {
 
     protected $_endPoints = array(
-        'properties' => '/portals/{{company}}/properties',
+        'properties' => '/companies/{{company}}/properties',
         'property' => '/companies/{{company}}/properties/%s',
     );
 }

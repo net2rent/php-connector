@@ -365,7 +365,7 @@ abstract class AbstractConnector
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (!($httpCode >= 200 && $httpCode < 300)) {
-            $e = new \Exception((curl_error($ch)) ? curl_error($ch) : sprintf('HttpCode %s is not valid!', $url) , (curl_errno($ch)) ? curl_errno($ch) : $httpCode);
+            $e = new \Exception((curl_error($ch)) ? curl_error($ch) : sprintf('HttpCode %d is not valid!', $httpCode) , (curl_errno($ch)) ? curl_errno($ch) : $httpCode);
             curl_close($ch);
             throw $e;
         }
