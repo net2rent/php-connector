@@ -1,0 +1,19 @@
+{
+    "name": "net2rent/php-connector",
+    "description": "PHP connector to consume net2rent API",
+    "type": "library",
+    "keywords": [
+        "net2rent",
+        "php",
+        "connector"
+    ],
+    "homepage": "http://www.net2rent.com/",
+    "require": {
+        "php": ">=5.3.23"
+    },
+    "autoload": {
+        "psr-0": {
+            "Net2rent\\": "lib/"
+        }
+    }
+}

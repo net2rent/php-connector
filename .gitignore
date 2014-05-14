@@ -4,3 +4,4 @@ vendor/*
 Thumbs.db
 .svn
 nbproject
+composer.phar
