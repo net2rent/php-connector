@@ -61,7 +61,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'POST', $properyOptions);
     }
 
-    public function updateProperty(integer $propertyId, array $properyOptions)
+    public function updateProperty($propertyId, array $properyOptions)
     {
         $endPoint = $this->getEndPoint('property', array(
             $propertyId
@@ -69,7 +69,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $properyOptions);
     }
 
-    public function updateImages(integer $typologyId, array $images)
+    public function updateImages($typologyId, array $images)
     {
         $endPoint = $this->getEndPoint('typology_images', array(
             $typologyId
@@ -112,7 +112,7 @@ class Publisher extends AbstractConnector
         }
     }
 
-    public function updateEquipment(integer $propertyId, array $equipment)
+    public function updateEquipment($propertyId, array $equipment)
     {
         $endPoint = $this->getEndPoint('property_equipment', array(
             $propertyId
@@ -123,7 +123,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, $requestType, $equipment);
     }
 
-    public function updatePropertyStatus(integer $propertyId, array $availability)
+    public function updatePropertyStatus($propertyId, array $availability)
     {
         $endPoint = $this->getEndPoint('property_propertystatus', array(
             $propertyId
@@ -131,7 +131,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $availability);
     }
 
-    public function updateTypologyPrices(integer $typologyId, array $prices)
+    public function updateTypologyPrices($typologyId, array $prices)
     {
         $endPoint = $this->getEndPoint('typology_prices', array(
             $typologyId
