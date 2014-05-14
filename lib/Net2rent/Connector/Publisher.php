@@ -55,13 +55,13 @@ class Publisher extends AbstractConnector
         );
     }
 
-    public function insertProperty($properyOptions)
+    public function insertProperty(array $properyOptions)
     {
         $endPoint = $this->getEndPoint('properties');
         return $this->api($endPoint, 'POST', $properyOptions);
     }
 
-    public function updateProperty($propertyId, $properyOptions)
+    public function updateProperty(int $propertyId, array $properyOptions)
     {
         $endPoint = $this->getEndPoint('property', array(
             $propertyId
@@ -69,7 +69,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $properyOptions);
     }
 
-    public function updateImages($typologyId, $images)
+    public function updateImages(int $typologyId, array $images)
     {
         $endPoint = $this->getEndPoint('typology_images', array(
             $typologyId
@@ -112,7 +112,7 @@ class Publisher extends AbstractConnector
         }
     }
 
-    public function updateEquipment($propertyId, $equipment)
+    public function updateEquipment(int $propertyId, array $equipment)
     {
         $endPoint = $this->getEndPoint('property_equipment', array(
             $propertyId
@@ -123,7 +123,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, $requestType, $equipment);
     }
 
-    public function updatePropertyStatus($propertyId, $availability)
+    public function updatePropertyStatus(int $propertyId, array $availability)
     {
         $endPoint = $this->getEndPoint('property_propertystatus', array(
             $propertyId
@@ -131,7 +131,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $availability);
     }
 
-    public function updateTypologyPrices($typologyId, $prices)
+    public function updateTypologyPrices(int $typologyId, array $prices)
     {
         $endPoint = $this->getEndPoint('typology_prices', array(
             $typologyId
@@ -139,7 +139,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $prices);
     }
 
-    protected function getBinaryFromFile($filepath)
+    protected function getBinaryFromFile(string $filepath)
     {
         return @file_get_contents($filepath);
     }

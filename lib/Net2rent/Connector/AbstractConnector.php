@@ -10,7 +10,7 @@ if (!function_exists('json_decode')) {
 
 abstract class AbstractConnector
 {
-    const VERSION = '0.1.1';
+    const VERSION = '0.2.0';
 
     protected $apiBaseUrl;
     protected $apiUser;
