@@ -1,5 +1,4 @@
 <?php
-
 namespace Net2rent\Connector;
 
 class Portal extends AbstractConnector
@@ -11,5 +10,4 @@ class Portal extends AbstractConnector
         'property_available' => '/portals/{{portal}}/typologies_availability/%s',
         'property' => '/portals/{{portal}}/typologies/%s',
     );
-
 }

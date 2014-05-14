@@ -10,7 +10,7 @@ if (!function_exists('json_decode')) {
 
 abstract class AbstractConnector
 {
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     protected $apiBaseUrl;
     protected $apiUser;
@@ -55,15 +55,15 @@ abstract class AbstractConnector
 
     protected function getEndPoint($type, $params = null)
     {
-        if(!isset($this->_endPoints[$type])) {
+        if (!isset($this->_endPoints[$type])) {
             throw new \Exception(sprintf('EndPoint "%s" not found.', $type));
         }
         $replaceVars = array(
             '{{portal}}' => $this->apiUser,
             '{{company}}' => $this->companyId,
         );
-        $endPoint = str_replace(array_keys($replaceVars), array_values($replaceVars), $this->_endPoints[$type]);
-        if(count($params) > 0) {
+        $endPoint = str_replace(array_keys($replaceVars) , array_values($replaceVars) , $this->_endPoints[$type]);
+        if (count($params) > 0) {
             array_unshift($params, $endPoint);
             $endPoint = call_user_func_array('sprintf', $params);
         }
@@ -172,7 +172,9 @@ abstract class AbstractConnector
      */
     public function getProperty($property_id, array $options = array())
     {
-        $endPoint = $this->getEndPoint((isset($options['checkin'])) ? 'property_available' : 'property', array($property_id));
+        $endPoint = $this->getEndPoint((isset($options['checkin'])) ? 'property_available' : 'property', array(
+            $property_id
+        ));
 
         $params = array();
         if (isset($options['checkin']) && isset($options['checkout'])) {
@@ -267,12 +269,12 @@ abstract class AbstractConnector
         return $date;
     }
 
-    public function api($endPoint, $type = 'GET', $params = array())
+    public function api($endPoint, $type = 'GET', $params = array() , $options = array())
     {
         if (!preg_match('#\:\/\/#', $endPoint)) {
             $endPoint = $this->apiBaseUrl . $endPoint;
         }
-        return $this->makeRequest($endPoint, $type, $params);
+        return $this->makeRequest($endPoint, $type, $params, $options);
     }
 
     protected function makeRequest($url, $method = 'GET', $params = array() , $options = array() , $ch = null)
@@ -320,22 +322,15 @@ abstract class AbstractConnector
         ))) {
 
             //            $rawBody = http_build_query($params, null, '&');
-            $rawBody = json_encode($params);
-            $opts[CURLOPT_POSTFIELDS] = $rawBody;
+            // $rawBody = json_encode($params);
+            $opts[CURLOPT_POSTFIELDS] = (isset($options['no_json_encode'])) ? $params : json_encode($params);
+            $opts[CURLOPT_POST] = 1;
         }
 
         curl_setopt_array($ch, $opts);
         $time = microtime(true);
 
         $result = curl_exec($ch);
-
-        if (curl_errno($ch) == 60) {
-
-            // CURLE_SSL_CACERT
-            self::errorLog('Invalid or no certificate authority found, ' . 'using bundled information');
-            curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/fb_ca_chain_bundle.crt');
-            $result = curl_exec($ch);
-        }
 
         // With dual stacked DNS responses, it's possible for a server to
         // have IPv6 enabled but not have IPv6 connectivity.  If this is
@@ -361,23 +356,42 @@ abstract class AbstractConnector
             throw $e;
         }
 
-        // var_dump($result);exit;
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if (!($httpCode >= 200 && $httpCode < 300)) {
-            $e = new \Exception((curl_error($ch)) ? curl_error($ch) : sprintf('HttpCode %d is not valid!', $httpCode) , (curl_errno($ch)) ? curl_errno($ch) : $httpCode);
-            curl_close($ch);
-            throw $e;
-        }
-        curl_close($ch);
-
-        //@TODO: Handle XML
         $response = json_decode($result, true);
         if ($response === false) {
             $response = $result;
         }
 
+        // var_dump($result);exit;
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (!($httpCode >= 200 && $httpCode < 300)) {
+            $errorMsg = (isset($response['n2rmsg'])) ? $response['n2rmsg'] : curl_error($ch);
+            $e = new \Exception(($errorMsg) ? $errorMsg : sprintf('HttpCode %d is not valid!', $httpCode) , (curl_errno($ch)) ? curl_errno($ch) : $httpCode);
+            curl_close($ch);
+            throw $e;
+        }
+        curl_close($ch);
+
+        return $response;
+    }
+
+    public function sendFile($url, $data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->apiBaseUrl . $url);
+
+        if ($this->apiUser && $this->apiPassword) {
+            curl_setopt($ch, CURLOPT_USERPWD, $this->apiUser . ":" . $this->apiPassword);
+        }
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
         return $response;
     }
 }
-

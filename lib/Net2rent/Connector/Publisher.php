@@ -8,6 +8,9 @@ class Publisher extends AbstractConnector
         'properties' => '/companies/{{company}}/properties',
         'property' => '/companies/{{company}}/properties/%s',
         'property_equipment' => '/properties/%s/equipment',
+        'typology_images' => '/typologies/%s/images',
+        'property_propertystatus' => '/properties/%s/propertystatus',
+        'typology_prices' => '/typologies/%s/pricecalendar',
     );
 
     public function getProperties(array $options = array())
@@ -24,7 +27,9 @@ class Publisher extends AbstractConnector
 
         $properties = array();
         foreach ($remoteProperties as $remoteProperty) {
-            $equipment_array = $this->api($this->getEndPoint('property_equipment', array($remoteProperty['id'])));
+            $equipment_array = $this->api($this->getEndPoint('property_equipment', array(
+                $remoteProperty['id']
+            )));
             $equipments = array();
             $not_equipments = array(
                 'id',
@@ -53,12 +58,89 @@ class Publisher extends AbstractConnector
     public function insertProperty($properyOptions)
     {
         $endPoint = $this->getEndPoint('properties');
-        $this->api($endPoint, 'POST', $properyOptions);
+        return $this->api($endPoint, 'POST', $properyOptions);
     }
 
     public function updateProperty($propertyId, $properyOptions)
     {
-        $endPoint = $this->getEndPoint('property', array($propertyId));
-        $this->api($endPoint, 'PUT', $properyOptions);
+        $endPoint = $this->getEndPoint('property', array(
+            $propertyId
+        ));
+        return $this->api($endPoint, 'PUT', $properyOptions);
+    }
+
+    public function updateImages($typologyId, $images)
+    {
+        $endPoint = $this->getEndPoint('typology_images', array(
+            $typologyId
+        ));
+        $currentImages = $this->api($endPoint);
+
+        $imagesToInsert = array();
+        foreach ($images as $image) {
+            $exists = false;
+            foreach ($currentImages as $currentImage) {
+                if ($currentImage['name'] == $image['image']) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $imagesToInsert[] = $image;
+            }
+        }
+
+        $tmpfile = tempnam(sys_get_temp_dir() , 'n2rimage');
+        foreach ($imagesToInsert as $image) {
+            $response = $this->api($endPoint, 'POST', array(
+                'name' => $image['image'],
+                'active' => true
+            ));
+            $imageId = $response['id'];
+
+            $endPointImage = sprintf($endPoint . '/%s/image', $imageId);
+
+            $imageBinary = $this->getBinaryFromFile($image['image']);
+            if ($imageBinary) {
+                file_put_contents($tmpfile, $imageBinary);
+                $cfile = new \CURLFile($tmpfile);
+                $this->sendFile($endPointImage, array(
+                    'file' => $cfile
+                ));
+                unlink($tmpfile);
+            }
+        }
+    }
+
+    public function updateEquipment($propertyId, $equipment)
+    {
+        $endPoint = $this->getEndPoint('property_equipment', array(
+            $propertyId
+        ));
+        $existEquipment = $this->api($endPoint);
+        $requestType = (isset($existEquipment['id']) && $existEquipment['id']) ? 'PUT' : 'POST';
+
+        return $this->api($endPoint, $requestType, $equipment);
+    }
+
+    public function updatePropertyStatus($propertyId, $availability)
+    {
+        $endPoint = $this->getEndPoint('property_propertystatus', array(
+            $propertyId
+        ));
+        return $this->api($endPoint, 'PUT', $availability);
+    }
+
+    public function updateTypologyPrices($typologyId, $prices)
+    {
+        $endPoint = $this->getEndPoint('typology_prices', array(
+            $typologyId
+        ));
+        return $this->api($endPoint, 'PUT', $prices);
+    }
+
+    protected function getBinaryFromFile($filepath)
+    {
+        return @file_get_contents($filepath);
     }
 }
