@@ -139,7 +139,7 @@ class Publisher extends AbstractConnector
         return $this->api($endPoint, 'PUT', $prices);
     }
 
-    protected function getBinaryFromFile(string $filepath)
+    protected function getBinaryFromFile($filepath)
     {
         return @file_get_contents($filepath);
     }
