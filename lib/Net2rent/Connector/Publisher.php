@@ -11,6 +11,7 @@ class Publisher extends AbstractConnector
         'typology_images' => '/typologies/%s/images',
         'property_propertystatus' => '/properties/%s/propertystatus',
         'typology_prices' => '/typologies/%s/pricecalendar',
+        'typology_property' => '/properties',
     );
 
     public function getProperties(array $options = array())
@@ -58,6 +59,12 @@ class Publisher extends AbstractConnector
     public function insertProperty(array $properyOptions)
     {
         $endPoint = $this->getEndPoint('properties');
+        return $this->api($endPoint, 'POST', $properyOptions);
+    }
+
+    public function insertPropertyIntoTypology(array $properyOptions)
+    {
+        $endPoint = $this->getEndPoint('typology_property');
         return $this->api($endPoint, 'POST', $properyOptions);
     }
 
