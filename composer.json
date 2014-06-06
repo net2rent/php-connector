@@ -9,7 +9,7 @@
     ],
     "homepage": "http://www.net2rent.com/",
     "require": {
-        "php": ">=5.3.23"
+        "php": ">=5.3.3"
     },
     "autoload": {
         "psr-0": {
