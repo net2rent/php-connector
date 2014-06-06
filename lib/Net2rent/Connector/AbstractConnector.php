@@ -10,7 +10,7 @@ if (!function_exists('json_decode')) {
 
 abstract class AbstractConnector
 {
-    const VERSION = '0.2.0';
+    const VERSION = '0.2.1';
 
     protected $apiBaseUrl;
     protected $apiUser;
@@ -24,8 +24,8 @@ abstract class AbstractConnector
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 60,
-        CURLOPT_USERAGENT => 'net2rent-connector-php-0.1.0',
+        CURLOPT_TIMEOUT => 240,
+        CURLOPT_USERAGENT => 'net2rent-connector-php-0.2.1',
     );
 
     /**
@@ -351,7 +351,15 @@ abstract class AbstractConnector
         }
 
         if ($result === false) {
-            $e = new \Exception(curl_error($ch) , curl_errno($ch));
+            $e = new Exception(
+                curl_error($ch),
+                curl_errno($ch),
+                null,
+                $url,
+                $params,
+                null,
+                null
+            );
             curl_close($ch);
             throw $e;
         }
@@ -361,12 +369,19 @@ abstract class AbstractConnector
             $response = $result;
         }
 
-        // var_dump($result);exit;
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (!($httpCode >= 200 && $httpCode < 300)) {
             $errorMsg = (isset($response['n2rmsg'])) ? $response['n2rmsg'] : curl_error($ch);
-            $e = new \Exception(($errorMsg) ? $errorMsg : sprintf('HttpCode %d is not valid!', $httpCode) , (curl_errno($ch)) ? curl_errno($ch) : $httpCode);
+            $e = new Exception(
+                ($errorMsg) ? $errorMsg : sprintf('HttpCode %d is not valid!', $httpCode) ,
+                (curl_errno($ch)) ? curl_errno($ch) : $httpCode,
+                (isset($response['n2rcode'])) ? $response['n2rcode'] : null,
+                $url,
+                $params,
+                $response,
+                $result
+            );
             curl_close($ch);
             throw $e;
         }
