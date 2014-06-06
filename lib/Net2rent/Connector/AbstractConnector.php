@@ -24,8 +24,8 @@ abstract class AbstractConnector
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 60,
-        CURLOPT_USERAGENT => 'net2rent-connector-php-0.1.0',
+        CURLOPT_TIMEOUT => 240,
+        CURLOPT_USERAGENT => 'net2rent-connector-php-0.2.1',
     );
 
     /**
@@ -351,7 +351,15 @@ abstract class AbstractConnector
         }
 
         if ($result === false) {
-            $e = new \Exception(curl_error($ch) , curl_errno($ch));
+            $e = new Exception(
+                curl_error($ch),
+                curl_errno($ch),
+                null,
+                $url,
+                $params,
+                null,
+                null
+            );
             curl_close($ch);
             throw $e;
         }
@@ -361,7 +369,6 @@ abstract class AbstractConnector
             $response = $result;
         }
 
-        // var_dump($result);exit;
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (!($httpCode >= 200 && $httpCode < 300)) {

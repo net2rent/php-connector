@@ -12,7 +12,7 @@ class Exception extends \Exception
     public function __construct($message = null, $code = 0, $n2rCode = null, $url = null, $params = array() , $result = array() , $resultRaw = null, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->setN2rCode($n2rCode)->setParams($params)->setResult($result)->setResultRaw($resultRaw);
+        $this->setN2rCode($n2rCode)->setParams($params)->setUrl($url)->setResult($result)->setResultRaw($resultRaw);
     }
 
     /**
