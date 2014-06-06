@@ -12,6 +12,7 @@ class Publisher extends AbstractConnector
         'property_propertystatus' => '/properties/%s/propertystatus',
         'typology_prices' => '/typologies/%s/pricecalendar',
         'typology_property' => '/properties/',
+        'season_days' => '/seasons/%d/days'
     );
 
     public function getProperties(array $options = array())
@@ -144,6 +145,27 @@ class Publisher extends AbstractConnector
             $typologyId
         ));
         return $this->api($endPoint, 'PUT', $prices);
+    }
+
+    public function setSeasonPeriod($seasonId, array $options)
+    {
+        $days = (isset($options['days']) && is_array($options['days'])) ? $options['days'] : array();
+        if(isset($options['from']) && $options['from'] && strtotime($options['from']) && isset($options['to']) && $options['to'] && strtotime($options['to']) ) {
+
+            $startAt = new \DateTime($options['from']);
+            $endAt = new \DateTime($options['to']);
+
+            $interval = new \DateInterval('P1D');
+            $daterange = new \DatePeriod($startAt, $interval ,$endAt);
+
+            foreach($daterange as $date){
+                $days[] = $date->format("Y-m-d");
+            }
+        }
+        $endPoint = $this->getEndPoint('season_days', array(
+            $seasonId
+        ));
+        return $this->api($endPoint, 'PUT', array('data' => $days));
     }
 
     protected function getBinaryFromFile($filepath)
