@@ -111,7 +111,7 @@ class Publisher extends AbstractConnector
             $imageBinary = $this->getBinaryFromFile($image['image']);
             if ($imageBinary) {
                 file_put_contents($tmpfile, $imageBinary);
-                $cfile = new \CURLFile($tmpfile);
+                $cfile = (class_exists('CURLFile', false)) ? new \CURLFile($tmpfile) : "@{$tmpfile}";
                 $this->sendFile($endPointImage, array(
                     'file' => $cfile
                 ));
