@@ -165,7 +165,7 @@ class Publisher extends AbstractConnector
         $endPoint = $this->getEndPoint('season_days', array(
             $seasonId
         ));
-        return $this->api($endPoint, 'PUT', array('data' => $days));
+        return $this->api($endPoint, 'PUT', $days);
     }
 
     protected function getBinaryFromFile($filepath)
