@@ -99,6 +99,9 @@ abstract class AbstractConnector
         if (isset($options['external_ref'])) {
             $params['external_ref'] = $options['external_ref'];
         }
+        if (isset($options['company_id'])) {
+            $params['company_id'] = $options['company_id'];
+        }
         $params['lg'] = $this->lg;
         $typologies = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
         $typologiesTotal = $this->api(sprintf($endPoint . '/size?%s', http_build_query($params)));
