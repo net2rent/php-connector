@@ -11,6 +11,7 @@ class Portal extends AbstractConnector
         'property' => '/portals/{{portal}}/typologies/%s',
         'typology_properties' => '/typologies/%s/properties',
         'companies' => '/portals/{{portal}}/companies',
+        'property_status' => '/properties/%s/propertystatus',
     );
 
     public function getCompanies()
@@ -95,5 +96,35 @@ class Portal extends AbstractConnector
             'total' => $apiPropertiesTotal['size'],
             'items' => $properties
         );
+    }
+
+    public function getPropertyStatus($propertyId)
+    {
+        $endPoint = $this->getEndPoint('property_status', array($propertyId));
+        return $this->api($endPoint);
+    }
+
+    public function getBlockedPeriods($propertyId)
+    {
+        $propertyStatus = $this->getPropertyStatus($propertyId);
+        $blockedPeriods = array();
+        $initialBlockedDay = null;
+        foreach($propertyStatus as $propertyStatusDay) {
+            if($propertyStatusDay['status'] == 'blocked') {
+                if(!$initialBlockedDay) {
+                    $initialBlockedDay = $propertyStatusDay['day'];
+                }
+            }
+            else {
+                if($initialBlockedDay) {
+                    $blockedPeriods[] = array(
+                        'initial_date' => $initialBlockedDay,
+                        'end_date' => $propertyStatusDay['day'],
+                    );
+                    $initialBlockedDay = null;
+                }
+            }
+        }
+        return $blockedPeriods;
     }
 }
