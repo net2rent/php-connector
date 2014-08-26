@@ -11,6 +11,8 @@ class Portal extends AbstractConnector
         'property' => '/portals/{{portal}}/typologies/%s',
         'typology_properties' => '/typologies/%s/properties',
         'companies' => '/portals/{{portal}}/companies',
+        'property_status' => '/properties/%s/propertystatus',
+        'typology_prices' => '/typologies/%s/pricecalendar',
     );
 
     public function getCompanies()
@@ -95,5 +97,93 @@ class Portal extends AbstractConnector
             'total' => $apiPropertiesTotal['size'],
             'items' => $properties
         );
+    }
+
+    public function getPropertyStatus($propertyId)
+    {
+        $endPoint = $this->getEndPoint('property_status', array($propertyId));
+        return $this->api($endPoint);
+    }
+
+    public function getBlockedPeriods($propertyId)
+    {
+        $propertyStatus = $this->getPropertyStatus($propertyId);
+        $blockedPeriods = array();
+        $initialBlockedDay = null;
+        $endBlockedDay = null;
+        foreach($propertyStatus as $propertyStatusDay) {
+            if($propertyStatusDay['status'] != 'available') {
+                if(!$initialBlockedDay) {
+                    $initialBlockedDay = $propertyStatusDay['day'];
+                }
+                $endBlockedDay = $propertyStatusDay['day'];
+            }
+            else {
+                if($initialBlockedDay) {
+                    $blockedPeriods[] = array(
+                        'initial_date' => $initialBlockedDay,
+                        'end_date' => $endBlockedDay,
+                    );
+                    $initialBlockedDay = null;
+                    $endBlockedDay = null;
+                }
+            }
+        }
+        if($initialBlockedDay) {
+            $blockedPeriods[] = array(
+                'initial_date' => $initialBlockedDay,
+                'end_date' => $endBlockedDay,
+            );
+        }
+        return $blockedPeriods;
+    }
+
+    public function getTypologyDaysPrices($typologyId)
+    {
+        $endPoint = $this->getEndPoint('typology_prices', array($typologyId));
+        return $this->api($endPoint);
+    }
+
+    public function getTypologyDaysPricesPeriods($typologyId)
+    {
+        $typologyDaysPrices = $this->getTypologyDaysPrices($typologyId);
+        $pricesPeriods = array();
+        $initialPriceDay = null;
+        $endPriceDay = null;
+        $price = null;
+        $minimumStay = null;
+
+        foreach($typologyDaysPrices as $typologyDayPrice) {
+            $rentPrice = (isset($typologyDayPrice['rentprice'])) ? $typologyDayPrice['rentprice'] : 0;
+            $discountPrice = (isset($typologyDayPrice['discountprice'])) ? $typologyDayPrice['discountprice'] : 0;
+            $newPrice = $rentPrice - $discountPrice;
+            $newMinimumStay = (isset($typologyDayPrice['minimum_nights'])) ? $typologyDayPrice['minimum_nights'] : 1;
+
+            $isDifferent = (bool)(($price !== $newPrice) || ($minimumStay !== $newMinimumStay));
+
+            if($isDifferent) {
+                if($price) {
+                    $pricesPeriods[] = array(
+                        'price' => $price,
+                        'minimum_stay' => $minimumStay,
+                        'start_date' => $initialPriceDay,
+                        'end_date' => $endPriceDay,
+                    );
+                }
+                $initialPriceDay = $typologyDayPrice['day'];
+                $price = $newPrice;
+                $minimumStay = $newMinimumStay;
+            }
+            $endPriceDay = $typologyDayPrice['day'];
+        }
+        if($price) {
+            $pricesPeriods[] = array(
+                'price' => $price,
+                'minimum_stay' => $minimumStay,
+                'start_date' => $initialPriceDay,
+                'end_date' => $endPriceDay,
+            );
+        }
+        return $pricesPeriods;
     }
 }
