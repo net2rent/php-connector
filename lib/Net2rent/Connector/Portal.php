@@ -58,10 +58,11 @@ class Portal extends AbstractConnector
                 }
             }
 
-            $properties[] = array(
+            $properties[] = $apiProperty + array(
                 'id' => $apiProperty['id'],
                 'name' => $apiProperty['name'],
                 'capacity' => $apiProperty['typology_capacity'],
+                'type' => $apiProperty['typology_building_type'],
                 'description' => array(
                     'es' => strip_tags($apiProperty['typology_description_es']) ,
                     'ca' => strip_tags($apiProperty['typology_description_ca']) ,
@@ -89,7 +90,9 @@ class Portal extends AbstractConnector
                 'price' => $apiProperty['typology_rent_price'],
                 'price_offer' => $apiProperty['typology_rent_price_offer'],
                 'online_reservation' => $apiProperty['typology_property_online_reservation'],
-                'image' => (isset($apiProperty['typology_image_id'])) ? sprintf('%s/typologies/%s/images/%s/image', $this->apiBaseUrl, $apiProperty['typology_id'], $apiProperty['typology_image_id']) : null
+                'image' => (isset($apiProperty['typology_image_id'])) ? sprintf('%s/typologies/%s/images/%s/image', $this->apiBaseUrl, $apiProperty['typology_id'], $apiProperty['typology_image_id']) : null,
+                'area' => $apiProperty['property_meters'],
+                'toilets' => $apiProperty['typology_toilets'],
             );
         }
 
