@@ -61,6 +61,7 @@ class Portal extends AbstractConnector
             $properties[] = $apiProperty + array(
                 'id' => $apiProperty['id'],
                 'name' => $apiProperty['name'],
+                'ref' => $apiProperty['ref_property_string'],
                 'capacity' => $apiProperty['typology_capacity'],
                 'type' => $apiProperty['typology_building_type'],
                 'description' => array(

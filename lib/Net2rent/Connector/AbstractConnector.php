@@ -127,6 +127,7 @@ abstract class AbstractConnector
             $properties[] = array(
                 'id' => $typology['id'],
                 'name' => $typology['name'],
+                'ref' => $typology['property_ref_property_string'],
                 'capacity' => $typology['capacity'],
                 'description' => array(
                     'es' => strip_tags($typology['description_es']) ,
