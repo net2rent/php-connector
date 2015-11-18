@@ -128,6 +128,7 @@ class Web extends AbstractConnector
         } else {
             $params['only_contract']=0;
         }
+        $params['orderby']='seasondate.day';
         
         $seasonsRates=array();
         
