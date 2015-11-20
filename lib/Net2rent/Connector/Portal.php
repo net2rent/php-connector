@@ -18,6 +18,8 @@ class Portal extends AbstractConnector
         'typology_prices' => '/typologies/%s/pricecalendar',
         'contacts' => '/portals/{{portal}}/contacts',
         'booking' => '/portals/{{portal}}/bookings',
+        'booking_external' => '/bookings/booking/%s',
+        'booking_modify' => '/bookings/%s',
     );
 
     public function getCompanies()
@@ -262,10 +264,12 @@ class Portal extends AbstractConnector
 
     /**
      * get portal contacts
-     * @param  string $params['email'] Email to filter results
      * @param  integer $params['company_id'] Company unique id to filter results
      * @param  integer $params['typology_id'] Typology unique id to filter results
      * @param  integer $params['property_id'] Property unique id to filter results
+     * @param  string $params['email'] Email to filter results
+     * @param  string $params['name'] Name to filter results
+     * @param  string $params['surname'] Surname to filter results
      * @return array    Contacts
      */
     public function getContacts($params = array())
@@ -284,9 +288,39 @@ class Portal extends AbstractConnector
         return $this->api($endPoint.'/', 'POST', $params);
     }
 
+    /**
+     * get booking by external id of the portal
+     * @param  string $external_id Booking external id
+     * @param  string $options['status'] Booking status. Filter booking only if is one of the submitted status, can be multiple separated by comma (,). Values [prebooked,booked,cancelled]
+     * @return array    Contacts
+     */
+    public function getBookingByExternalId($external_id,$options = array())
+    {
+        $params = array();
+        if(isset($options['status'])) {
+            $params['status'] = $options['status'] ? $options['status']  : "";
+        }
+        
+        $endPoint = $this->getEndPoint('booking_external', array($external_id));
+        return $this->api(sprintf($endPoint . '?%s',http_build_query($params)));
+    }    
+    
     public function insertBooking($params = array())
     {
         $endPoint = $this->getEndPoint('booking');
         return $this->api($endPoint.'/', 'POST', $params);
+    }
+    
+    /**
+     * modify booking
+     * to modify dates, set params "date_in" and "date_out"
+     * to cancel booking, set param status=cancelled
+     * @param  integer $booking_id Booking id
+     * @p
+     */ 
+    public function modifyBooking($booking_id,$params = array())
+    {
+        $endPoint = $this->getEndPoint('booking_modify');
+        return $this->api(sprintf($endPoint, $booking_id), 'PUT', $params);
     }
 }

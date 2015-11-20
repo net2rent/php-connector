@@ -104,6 +104,8 @@ abstract class AbstractConnector
      * @param  string $options['name'] Filter by name, with LIKE %xxx%
      * @param  string $options['city'] Filter by city name
      * @param  string $options['external_ref'] Filter by external_ref
+     * @param  string $options['hotel_id'] Filter by hotel_id
+     * @param  string $options['room_id'] Filter by room_id
      * @param  integer $options['company_id'] Filter by company_id
      * @param  string $options['ref_string'] Filter by property ref string
      * @param  string $options['commercialization_type'] Valid values: [rental, sale, rental_sale, property_management, rental_property_management], can be multiple separed by , (comma)
@@ -152,6 +154,12 @@ abstract class AbstractConnector
         }
         if (isset($options['external_ref'])) {
             $params['external_ref'] = $options['external_ref'];
+        }
+        if (isset($options['hotel_id'])) {
+            $params['hotel_id'] = $options['hotel_id'];
+        }
+        if (isset($options['room_id'])) {
+            $params['room_id'] = $options['room_id'];
         }
         if (isset($options['company_id'])) {
             $params['company_id'] = $options['company_id'];
@@ -340,7 +348,7 @@ abstract class AbstractConnector
                     'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
                     'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
                     'online_reservation' => isset($typology['property_online_reservation']) ? $typology['property_online_reservation'] : null,
-                    'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
+					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
                     'property_meters'=> isset($typology['property_property_meters']) ? $typology['property_property_meters'] : null,
 
                     'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
@@ -466,11 +474,11 @@ abstract class AbstractConnector
         $property = array(
             'id' => $typology['id'],
             'name' => $typology['name'],
-            'ref' => $typology['property_ref_property_string'],
-            'generalitat_reference' => $typology['property_generalitat_reference'],
-            'toilets' => $typology['toilets'],
-            'capacity' => $typology['capacity'],
-            'building_type' => $typology['building_type'],
+            'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
+            'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
+            'toilets' => isset($typology['toilets']) ? $typology['toilets'] : 0,
+            'capacity' => isset($typology['capacity']) ? $typology['capacity'] : 0,
+            'building_type' => isset($typology['building_type']) ? $typology['building_type'] : null,
             'commercialization_type' => $typology['commercialization_type'],
             'rent_type' => $typology['rent_type'],
             'name_lg' => array(
@@ -534,27 +542,27 @@ abstract class AbstractConnector
 
             'online_reservation' => (isset($typology['default_online_reservation'])) ? $typology['default_online_reservation'] : null,
 
-            'bathroom_tub'=> $typology['property_bathroom_tub'],
-            'bathroom_shower'=> $typology['property_bathroom_shower'],
-            'total_toilets' => $typology['toilets']+$typology['property_bathroom_tub']+$typology['property_bathroom_shower'],
-            'floor'=> $typology['property_floor'],
-            'lift'=> $typology['property_lift'],
-            'parking'=> $typology['parking'],
-            'garage'=> $typology['garage'],
-            'views'=> $typology['property_views'],
-            'garden'=> $typology['garden'],
-            'pool_type'=> $typology['pool_type'],
-            'pool_sizes'=> $typology['pool_sizes'],
-            'sea_distance'=> $typology['sea_distance'],
+            'bathroom_tub'=> isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0,
+            'bathroom_shower'=> isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0,
+            'total_toilets' => (isset($typology['toilets']) ? $typology['toilets'] : 0)+(isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0)+(isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0),
+            'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
+            'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
+            'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
+            'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
+            'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
+            'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
+            'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
+            'pool_sizes'=> isset($typology['pool_sizes']) ? $typology['pool_sizes'] : null,
+            'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
 
-            'double_beds'=> $typology['property_double_beds'],
-            'single_beds'=> $typology['property_single_beds'],
-            'bunk_beds'=> $typology['property_bunk_beds'],
-            'babycots'=> $typology['property_babycots'],
-            'sofa_beds'=> $typology['property_sofa_beds'],
+            'double_beds'=> isset($typology['property_double_beds']) ? $typology['property_double_beds'] : 0,
+            'single_beds'=> isset($typology['property_single_beds']) ? $typology['property_single_beds'] : 0,
+            'bunk_beds'=> isset($typology['property_bunk_beds']) ? $typology['property_bunk_beds'] : 0,
+            'babycots'=> isset($typology['property_babycots']) ? $typology['property_babycots'] : 0,
+            'sofa_beds'=> isset($typology['property_sofa_beds']) ? $typology['property_sofa_beds'] : 0,
             'kitchen_type'=> $typology['property_kitchen_type'],
-            'pets'=> $typology['property_pets'],
-            'smokers'=> $typology['property_smokers'],
+            'pets'=> isset($typology['property_pets']) ? $typology['property_pets'] : null,
+            'smokers'=> isset($typology['property_smokers']) ? $typology['property_smokers'] : null,
 
             'balcony'=> $typology['balcony'],
             'terrace'=> $typology['terrace'],
