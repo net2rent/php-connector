@@ -378,7 +378,11 @@ class Web extends AbstractConnector
     /**
      * Gets comments from a property
      *
-     * @param  string $options['orderby'] Order comments
+     * @param  string $options['public'] Filter by public. 1=public, 0=no public, null=all (default=1)
+     * @param  string $options['lang'] Filter by comment language, valid values: ca,es,en,fr,de,nl,it,ru
+     * @param  string $options['orderby'] Order comments field
+     * @param  string $options['orderby'] Order comments field
+     * @param  string $options['orderdesc'] Order comments ASC (0) or DESC (1)
      * @return array  (total|items)
      */
     public function getComments($propertyId, array $options = array())
@@ -386,6 +390,10 @@ class Web extends AbstractConnector
         $endPoint = $this->getEndPoint('comments');
 
         $params = array();
+        $params['public']=1;
+        if(isset($options['public'])) {
+            $params['public'] = (int)$options['public'];
+        }
         $params['orderby']='clientcomment.creation_date';
         if(isset($options['orderby'])) {
             $params['orderby'] = $options['orderby'];
