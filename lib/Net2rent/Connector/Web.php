@@ -225,7 +225,7 @@ class Web extends AbstractConnector
                     }
                 }
                 if($prev) {
-                    $seasonsRates[$i]['dates'][$j]['end_day']=$prev;
+					$seasonsRates[$i]['dates'][$j]['end_day']=$prev;
                 }
             }
         }
