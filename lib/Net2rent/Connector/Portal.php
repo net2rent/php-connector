@@ -17,6 +17,7 @@ class Portal extends AbstractConnector
         'availability_property' => '/typologies/%s/availability',
         'typology_prices' => '/typologies/%s/pricecalendar',
         'contacts' => '/portals/{{portal}}/contacts',
+        'contacts_modify' => '/contacts/%s',
         'booking' => '/portals/{{portal}}/bookings',
         'booking_external' => '/bookings/booking/%s',
         'booking_modify' => '/bookings/%s',
@@ -287,6 +288,17 @@ class Portal extends AbstractConnector
         $endPoint = $this->getEndPoint('contacts');
         return $this->api($endPoint.'/', 'POST', $params);
     }
+    
+    /**
+     * modify contact
+     * @return object    Contact
+     * @param  integer $contactId Contact id
+     */
+    public function modifyContact($contactId,$params = array())
+    {
+        $endPoint = $this->getEndPoint('contacts_modify');
+        return $this->api(sprintf($endPoint, $contactId), 'PUT', $params);
+    }
 
     /**
      * get booking by external id of the portal
@@ -315,12 +327,12 @@ class Portal extends AbstractConnector
      * modify booking
      * to modify dates, set params "date_in" and "date_out"
      * to cancel booking, set param status=cancelled
-     * @param  integer $booking_id Booking id
+     * @param  integer $bookingId Booking id
      * @p
      */ 
-    public function modifyBooking($booking_id,$params = array())
+    public function modifyBooking($bookingId,$params = array())
     {
         $endPoint = $this->getEndPoint('booking_modify');
-        return $this->api(sprintf($endPoint, $booking_id), 'PUT', $params);
+        return $this->api(sprintf($endPoint, $bookingId), 'PUT', $params);
     }
 }
