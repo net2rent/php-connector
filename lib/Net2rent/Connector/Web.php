@@ -17,12 +17,14 @@ class Web extends AbstractConnector
         'property_equipment' => '/properties/%s/equipment',        
         'property_propertystatus' => '/properties/%s/propertystatus',
         'property_availability' => '/typologies/%s/pricecalendar',
+        'property_accessories' => '/properties/%s/propertyaccessories',
         'season_days' => '/seasons/%d/days',
         'contacts' => '/companies/{{company}}/contacts',
         'contact' => '/contacts/',
         'booking' => '/bookings/',
         'booking_search' => '/companies/{{company}}/bookings',
         'booking_person' => '/bookings/%s/people/',
+        'booking_accessory' => '/bookings/%s/accessories/',
         'payment' => '/bookings/%s/payments/',
         'comments' => '/typologies/%s/clientcomments',
         'puntualoffers' => '/companies/{{company}}/puntualoffers',
@@ -56,15 +58,15 @@ class Web extends AbstractConnector
     /**
      * Gets property availability and prices
      *
-     * @param  string  $property_id
+     * @param  string  $propertyId
      * @param  date  $options['from'] First date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
      * @param  date  $options['to'] Last date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
      * @return array  (items)
      */
-    public function getAvailability($property_id, array $options = array())
+    public function getAvailability($propertyId, array $options = array())
     {
         $endPoint = $this->getEndPoint('property_availability', array(
-            $property_id
+            $propertyId
         ));
 
         $params = array();
@@ -276,6 +278,71 @@ class Web extends AbstractConnector
         return $seasonsOverwrittenRates;
     }
     
+    /**
+     * Gets property availability and prices
+     *
+     * @param  string  $propertyId
+     * @param  date  $options['mandatory'] Filter by mandatory (1=yes, 0=no)
+     * @param  lg    $options['mandatory'] Language of the accessory name (values: ca,es,en,fr,de,nl,ru,it)
+     * @param  date  $options['from'] First date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
+     * @param  date  $options['to'] Last date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
+     * @return array  (items)
+     */
+    public function getPropertyAccessories($propertyId, array $options = array())
+    {
+        $endPoint = $this->getEndPoint('property_accessories', array(
+            $propertyId
+        ));
+
+        $params = array();
+        $params['lg']=isset($options['lg']) && $options['lg'] ?  $options['lg'] : ""; 
+        
+        $mandatory=isset($options['mandatory']) ? $options['mandatory'] : null; 
+        $checkin=isset($options['checkin']) && $options['checkin'] ? $options['checkin'] : null;   
+        $checkout=isset($options['checkout']) && $options['checkout'] ? $options['checkout'] : null;   
+        
+        // calculate night number
+        $date_in_datetime=date_create($checkin);
+        $date_out_datetime=date_create($checkout);        
+        $night_number =(int)date_diff($date_in_datetime,$date_out_datetime)->format('%a');
+        
+        $accessories = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+        $accessoriesReturn=array();
+        
+        foreach($accessories as $accessory) {
+            // ignore non public accessories
+            if(isset($accessory['public']) && !(int)$accessory['public']) {
+                continue;
+            }
+          
+            if(isset($mandatory)) {
+                // ignore accessories with mandatory distinct from the submitted option
+                if($mandatory!=(int)$accessory['mandatory']) {
+                    continue;
+                }
+                
+                // if accessory is mandatory and checkin is not between dates, ignore
+                if($accessory['mandatory']==1 && $checkin && $accessory['date_from'] && $checkin<$accessory['date_from']) {
+                    continue;
+                }
+                
+                if($accessory['mandatory']==1 && $checkin && $accessory['date_to'] && $checkin>$accessory['date_to']) {
+                    continue;
+                }
+            }
+            
+            // calculate accessory price
+            $totalprice=0;
+            if($accessory['price_type']=='day') { $totalprice=$accessory['price']*$night_number; }
+            else if($accessory['price_type']=='week') { $totalprice=($accessory['price']/7)*$night_number; }
+            else { $totalprice=$accessory['price']; }
+            $accessory['totalprice']=$totalprice;
+            
+            $accessoriesReturn[]=$accessory;
+        }
+        
+        return $accessoriesReturn;
+    }
     
     /**
      * Gets contacts from a company
@@ -355,6 +422,16 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('booking_person');
         return $this->api(sprintf($endPoint,$bookingPersonOptions['booking_id']), 'POST', $bookingPersonOptions);
+    }
+    
+    /**
+     * Inserts a booking accessory. To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=admin%40company.com&pas=admin_company&section=bookings&call=POST+%2Fbookings%2F%3Abooking_id%2Faccessories%2F
+     */
+    public function insertBookingAccessory(array $bookingAccessoryOptions)
+    {
+        $endPoint = $this->getEndPoint('booking_accessory');
+        return $this->api(sprintf($endPoint,$bookingAccessoryOptions['booking_id']), 'POST', $bookingAccessoryOptions);
     }
     
     public function getPayment($bookingId,$paymentId)
