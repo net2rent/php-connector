@@ -324,6 +324,8 @@ abstract class AbstractConnector
                     'bathroom_shower'=> isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0,
                     'total_toilets' => (isset($typology['toilets']) ? $typology['toilets'] : 0)+(isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0)+(isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0),
                     'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
+                    'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
+                    'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
                     'price' => isset($typology['rent_price']) ? $typology['rent_price'] : null,
                     'price_offer' => isset($typology['rent_price_offer']) ? $typology['rent_price_offer'] : null,
                     'sell_price' => isset($typology['sell_price']) ? $typology['sell_price'] : null,
