@@ -688,6 +688,9 @@ class Web extends AbstractConnector
      * @param  bool $options['unexpired'] Filter by unexpired
      * @param  date  $options['start_day'] Filter by start day greater or equal
      * @param  date  $options['end_day'] Filter by end day less or equal
+     * @param  date  $options['apply_final'] Filter by apply_final. Values 1=true, 0=false, default value=true
+     * @param  date  $options['apply_ttoo'] Filter by apply_ttoo. Values 1=true, 0=false, default value=false
+     * @param  date  $options['apply_central'] Filter by apply_central. Values 1=true, 0=false, default value=false
      * @return array  (total|items)
      */
     public function getDiscountsProperty($propertyId,array $options = array())
@@ -710,14 +713,36 @@ class Web extends AbstractConnector
         $params['end_day']='';
         if (isset($options['end_day'])) {
             $params['end_day'] = $options['end_day'];
+        }        
+        $params['apply_final']=true;
+        if (isset($options['apply_final'])) {
+            $params['apply_final'] = $options['apply_final'];
+        }
+        $params['apply_ttoo']=false;
+        if (isset($options['apply_ttoo'])) {
+            $params['apply_ttoo'] = $options['apply_ttoo'];
+        }
+        $params['apply_central']=false;
+        if (isset($options['apply_central'])) {
+            $params['apply_central'] = $options['apply_central'];
         }
 
         $discounts = $this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
 
+        $discounts_filtered=array();
+        foreach($discounts as $discount) {
+            if(
+                ( (bool)$params['apply_final']===true && $discount['apply_final'] )
+                || ( (bool)$params['apply_ttoo']===true && $discount['apply_ttoo'] )     
+                || ( (bool)$params['apply_central']===true && $discount['apply_central'] )     
+            ) {
+                $discounts_filtered[]=$discount;
+            }
+        }
         
         return array(
-            'total' => count($discounts),
-            'items' => $discounts
+            'total' => count($discounts_filtered),
+            'items' => $discounts_filtered
         );
     }
     
