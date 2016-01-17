@@ -352,6 +352,10 @@ abstract class AbstractConnector
                     'online_reservation' => isset($typology['property_online_reservation']) ? $typology['property_online_reservation'] : null,
 					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
                     'property_meters'=> isset($typology['property_property_meters']) ? $typology['property_property_meters'] : null,
+                    'parcel_meters'=> isset($typology['property_parcel_meters']) ? $typology['property_parcel_meters'] : null,
+                    'balcony'=> isset($typology['balcony']) ? $typology['balcony'] : null,
+                    'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
+                    'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
 
                     'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
                             $this->apiBaseUrl,
