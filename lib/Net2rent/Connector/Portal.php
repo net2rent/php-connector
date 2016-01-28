@@ -164,7 +164,7 @@ class Portal extends AbstractConnector
         $i=0;
         foreach($availabilityPortalDays as $availabilityPortalDay) {
             // if matches availability portal day with availability day, get data, else put available to 0 
-            $availabilityPropertyDay=isset($availabilityPropertyDays[$i]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'avail'=>0);
+            $availabilityPropertyDay=isset($availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'avail'=>0);
             $available=(int)$availabilityPortalDay['available']-(int)$availabilityPortalDay['bookings'];
             if($available>(int)$availabilityPropertyDay['avail']) {
                 $available=(int)$availabilityPropertyDay['avail'];
