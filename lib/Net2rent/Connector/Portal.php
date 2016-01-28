@@ -155,12 +155,16 @@ class Portal extends AbstractConnector
         
         $endPoint2 = $this->getEndPoint('availability_property', array($typologyId));
         $availabilityPropertyDays = $this->api(sprintf($endPoint2 . '?%s', http_build_query($params)));
+        $availabilityPropertyDaysDayIndexed=array();
+        foreach($availabilityPropertyDays as $availabilityPropertyDay) {
+            $availabilityPropertyDaysDayIndexed[$availabilityPropertyDay['day']]=$availabilityPropertyDay;
+        }
 
         $return=array();
         $i=0;
         foreach($availabilityPortalDays as $availabilityPortalDay) {
             // if matches availability portal day with availability day, get data, else put available to 0 
-            $availabilityPropertyDay=isset($availabilityPropertyDays[$i]) && $availabilityPropertyDays[$i]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDays[$i] : array('day'=>$availabilityPortalDay['day'],'avail'=>0);
+            $availabilityPropertyDay=isset($availabilityPropertyDays[$i]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'avail'=>0);
             $available=(int)$availabilityPortalDay['available']-(int)$availabilityPortalDay['bookings'];
             if($available>(int)$availabilityPropertyDay['avail']) {
                 $available=(int)$availabilityPropertyDay['avail'];
