@@ -40,6 +40,7 @@ class Portal extends AbstractConnector
      *
      * @param  integer  $typology_id Typology id
      * @param  boolean  $options['simple_response'] To get few fields
+     * @param  integer  $options['limit'] Limit to this number of properties 
      * @return array  (items|total)
      */
     public function getTypologyProperties($typology_id, $options = array())
@@ -48,13 +49,26 @@ class Portal extends AbstractConnector
         if (isset($options['simple_response'])) {
             $params['simple_response'] = ($options['simple_response']) ? '1' : '0';
         }
+        if (isset($options['limit'])) {
+            $limit = $options['limit'] ? (int)$options['limit'] : null;
+        }
         $endPoint = $this->getEndPoint('typology_properties', array($typology_id));
 
         $apiProperties = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
-        $apiPropertiesTotal = $this->api($endPoint . '/size');
+//        $apiPropertiesTotal = $this->api($endPoint . '/size');
 
         $properties = array();
+        $num=0;
+        $total=0;
         foreach ($apiProperties as $apiProperty) {
+            $num++;
+            if(isset($limit) && $num>$limit) { 
+                $total=$num-1;
+                break; 
+            } else {
+                $total++;
+            }
+            
             if(isset($options['simple_response']) && $options['simple_response']) {
                 $properties[] = $apiProperty + array(
                     'id' => $apiProperty['id'],
@@ -120,7 +134,7 @@ class Portal extends AbstractConnector
         }
 
         return array(
-            'total' => $apiPropertiesTotal['size'],
+            'total' => $total,
             'items' => $properties
         );
     }
@@ -143,17 +157,20 @@ class Portal extends AbstractConnector
     public function getAvailabilityDays($typologyId, array $options)
     {
         $params = array();
+        $params['from']=date('Y-m-d');
+        $params['to']=date('Y-m-d',strtotime($params['from'].' + 1 year'));
         if(isset($options['from'])) {
-            $params['from'] = $options['from'] ? $options['from']  : "";
+            $params['from'] = $options['from'] ? $options['from']  : date('Y-m-d');
         }
         if(isset($options['to'])) {
-            $params['to'] = $options['to'] ? $options['to']  : "";
+            $params['to'] = $options['to'] ? $options['to']  : date('Y-m-d',strtotime($params['from'].' + 1 year'));
         }
         
         $endPoint1 = $this->getEndPoint('availability_portals', array($typologyId));
         $availabilityPortalDays = $this->api(sprintf($endPoint1 . '?%s', http_build_query($params)));
         
-        $endPoint2 = $this->getEndPoint('availability_property', array($typologyId));
+        $endPoint2 = $this->getEndPoint('typology_prices', array($typologyId));
+    
         $availabilityPropertyDays = $this->api(sprintf($endPoint2 . '?%s', http_build_query($params)));
         $availabilityPropertyDaysDayIndexed=array();
         foreach($availabilityPropertyDays as $availabilityPropertyDay) {
@@ -164,13 +181,18 @@ class Portal extends AbstractConnector
         $i=0;
         foreach($availabilityPortalDays as $availabilityPortalDay) {
             // if matches availability portal day with availability day, get data, else put available to 0 
-            $availabilityPropertyDay=isset($availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'avail'=>0);
+            $availabilityPropertyDay=isset($availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'available'=>0);
             $available=(int)$availabilityPortalDay['available']-(int)$availabilityPortalDay['bookings'];
-            if($available>(int)$availabilityPropertyDay['avail']) {
-                $available=(int)$availabilityPropertyDay['avail'];
+            if($available>(int)$availabilityPropertyDay['available']) {
+                $available=(int)$availabilityPropertyDay['available'];
             }
+            if($available<0) { $available=0; }
             $return[]=array(
                 'day' => $availabilityPortalDay['day'],
+                'entry_days' => $availabilityPropertyDay['entry_days'],
+                'out_days' => $availabilityPropertyDay['out_days'],
+                'minimum_nights' => $availabilityPropertyDay['minimum_nights'],
+                'rentprice' => $availabilityPropertyDay['rentprice'],
                 'available' => $available
             );
             $i++;
