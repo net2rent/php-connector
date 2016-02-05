@@ -20,6 +20,7 @@ class Portal extends AbstractConnector
         'contacts_modify' => '/contacts/%s',
         'booking' => '/portals/{{portal}}/bookings',
         'booking_external' => '/bookings/booking/%s',
+        'booking_external_ref_id' => '/bookings/booking/%s/%s',
         'booking_modify' => '/bookings/%s',
     );
 
@@ -330,7 +331,7 @@ class Portal extends AbstractConnector
      * get booking by external id of the portal
      * @param  string $external_id Booking external id
      * @param  string $options['status'] Booking status. Filter booking only if is one of the submitted status, can be multiple separated by comma (,). Values [prebooked,booked,cancelled]
-     * @return array    Contacts
+     * @return array
      */
     public function getBookingByExternalId($external_id,$options = array())
     {
@@ -340,6 +341,24 @@ class Portal extends AbstractConnector
         }
         
         $endPoint = $this->getEndPoint('booking_external', array($external_id));
+        return $this->api(sprintf($endPoint . '?%s',http_build_query($params)));
+    }
+    
+    /**
+     * get booking by external ref and external id of the portal
+     * @param  string $external_ref Booking external id
+     * @param  string $external_id Booking external id
+     * @param  string $options['status'] Booking status. Filter booking only if is one of the submitted status, can be multiple separated by comma (,). Values [prebooked,booked,cancelled]
+     * @return array 
+     */
+    public function getBookingByExternalRefExternalId($external_ref,$external_id,$options = array())
+    {
+        $params = array();
+        if(isset($options['status'])) {
+            $params['status'] = $options['status'] ? $options['status']  : "";
+        }
+        
+        $endPoint = $this->getEndPoint('booking_external_ref_id', array($external_ref,$external_id));
         return $this->api(sprintf($endPoint . '?%s',http_build_query($params)));
     }    
     
