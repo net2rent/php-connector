@@ -367,6 +367,18 @@ class Portal extends AbstractConnector
         $endPoint = $this->getEndPoint('booking');
         return $this->api($endPoint.'/', 'POST', $params);
     }
+
+    public function getBookings($params = array())
+    {
+        $endPoint = $this->getEndPoint('booking');
+        return $this->api($endPoint, 'GET', $params);
+    }
+
+    public function getBooking($bookingId)
+    {
+        $endPoint = $this->getEndPoint('booking_modify', array($bookingId));
+        return $this->api($endPoint, 'GET');
+    }
     
     /**
      * modify booking
