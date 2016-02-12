@@ -12,6 +12,7 @@ class Portal extends AbstractConnector
         'property' => '/typologies/%s',
         'typology_properties' => '/typologies/%s/properties',
         'companies' => '/portals/{{portal}}/companies',
+        'company' => '/companies/%s',
         'property_status' => '/properties/%s/propertystatus',
         'availability_portals' => '/typologies/%s/portal/{{portal_id}}/availability_portals',
         'availability_property' => '/typologies/%s/availability',
@@ -35,6 +36,14 @@ class Portal extends AbstractConnector
             // 'total' => $companiesTotal['total'],
             'items' => $companies
         );
+    }
+    
+    public function getCompany($companyId)
+    {
+        $endPoint = $this->getEndPoint('company', array($companyId));
+        $company = $this->api($endPoint);
+
+        return $company;
     }
 
     /**
