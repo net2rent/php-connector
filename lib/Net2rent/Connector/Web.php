@@ -394,7 +394,7 @@ class Web extends AbstractConnector
     public function searchBooking($bookingRef,$email)
     {
         $endPoint = $this->getEndPoint('booking_search');
-        $booking=$this->api(sprintf($endPoint . '?ref_string=%s',$bookingRef));
+        $booking=$this->api(sprintf($endPoint . '?ref_string=%s',urlencode($bookingRef))); 
         
         // only return booking if email matches
         if($booking && !empty($booking) && $booking[0]['contact_email']==$email) {
