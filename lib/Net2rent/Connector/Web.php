@@ -22,6 +22,8 @@ class Web extends AbstractConnector
         'contacts' => '/companies/{{company}}/contacts',
         'contact' => '/contacts/',
         'booking' => '/bookings/',
+        'bookings_contact' => '/contacts/%s/bookings',
+        'bookings_guaranteed' => '/bookings/%s/guaranteed',
         'booking_search' => '/companies/{{company}}/bookings',
         'booking_person' => '/bookings/%s/people/',
         'booking_accessory' => '/bookings/%s/accessories/',
@@ -389,6 +391,71 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('booking');
         return $this->api(sprintf($endPoint . '%s',$bookingId));
+    }
+    
+    /**
+     * Gets bookings from a contact
+     *
+     * @param  string $options['offset'] 
+     * @param  string $options['limit']
+     * @param  string $options['status']
+     * @param  string $options['date_type'] 
+     * @param  string $options['date_in']
+     * @param  string $options['date_out']
+     * @param  string $options['orderby']
+     * @param  string $options['orderdesc']
+     * @return array  (items)
+     */
+    public function getBookingsContact($contactId,array $options = array())
+    {
+        $params = array();
+        $params['offset']=0;
+        if (isset($options['offset'])) {
+            $params['offset'] = $options['offset'];
+        }
+        $params['limit']=-1;
+        if (isset($options['limit'])) {
+            $params['limit'] = $options['limit'];
+        }
+        $params['status']='';
+        if (isset($options['status'])) {
+            $params['status'] = $options['status'];
+        }
+        $params['date_type']=0;
+        if (isset($options['date_type'])) {
+            $params['date_type'] = $options['date_type'];
+        }
+        $params['date_in']='';
+        if (isset($options['date_in'])) {
+            $params['date_in'] = $options['date_in'];
+        }
+        $params['orderby']='offer.date_in';
+        if (isset($options['orderby'])) {
+            $params['orderby'] = $options['orderby'];
+        }
+        $params['orderdesc']=0;
+        if (isset($options['orderdesc'])) {
+            $params['orderdesc'] = $options['orderdesc'];
+        }
+        
+        $endPoint = $this->getEndPoint('bookings_contact');
+        $bookings = $this->api(sprintf($endPoint . '?%s',$contactId,http_build_query($params)));
+        
+        return array(
+            'items' => $bookings,
+            'total' => count($bookings)
+        );
+    }
+    
+    public function getGuaranteedBookingsBooking($bookingId)
+    {
+        $endPoint = $this->getEndPoint('bookings_guaranteed');
+        $bookings = $this->api(sprintf($endPoint,$bookingId));
+        
+        return array(
+            'items' => $bookings,
+            'total' => count($bookings)
+        );
     }
     
     public function searchBooking($bookingRef,$email)
