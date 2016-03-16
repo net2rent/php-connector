@@ -394,7 +394,7 @@ abstract class AbstractConnector
      * @param  integer  $options['web'] 1/0 if 1, show available only if web_visible is 1
      * @return array  (items)
      */
-    public function getProperty($property_id, array $options = array())
+    public function getProperty($property_id, array $options = array(),$strip_tags=true)
     {
         $endPoint = $this->getEndPoint((isset($options['checkin'])) ? 'property_available' : 'property', array(
             $property_id
@@ -457,14 +457,14 @@ abstract class AbstractConnector
                 'id' => $image['id'],
                 'name' => $image['name'],
                 'description' => array(
-                    'es' => strip_tags($image['description_es']) ,
-                    'ca' => strip_tags($image['description_ca']) ,
-                    'en' => strip_tags($image['description_en']) ,
-                    'fr' => strip_tags($image['description_fr']) ,
-                    'de' => strip_tags($image['description_de']) ,
-                    'nl' => strip_tags($image['description_nl']) ,
-                    'it' => strip_tags($image['description_it']) ,
-                    'ru' => strip_tags($image['description_ru'])
+                    'es' => $strip_tags ? strip_tags($image['description_es']) : $image['description_es'] ,
+                    'ca' => $strip_tags ? strip_tags($image['description_ca']) : $image['description_ca'] ,
+                    'en' => $strip_tags ? strip_tags($image['description_en']) : $image['description_en'] ,
+                    'fr' => $strip_tags ? strip_tags($image['description_fr']) : $image['description_fr'] ,
+                    'de' => $strip_tags ? strip_tags($image['description_de']) : $image['description_de'] ,
+                    'nl' => $strip_tags ? strip_tags($image['description_nl']) : $image['description_nl'] ,
+                    'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
+                    'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
                 ) ,
                 'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
                         $this->apiBaseUrl,
@@ -488,24 +488,24 @@ abstract class AbstractConnector
             'commercialization_type' => $typology['commercialization_type'],
             'rent_type' => $typology['rent_type'],
             'name_lg' => array(
-                'es' => strip_tags($typology['name_es']) ,
-                'ca' => strip_tags($typology['name_ca']) ,
-                'en' => strip_tags($typology['name_en']) ,
-                'fr' => strip_tags($typology['name_fr']) ,
-                'de' => strip_tags($typology['name_de']) ,
-                'nl' => strip_tags($typology['name_nl']) ,
-                'it' => strip_tags($typology['name_it']) ,
-                'ru' => strip_tags($typology['name_ru'])
+                'es' => $strip_tags ? strip_tags($typology['name_es']) : $typology['name_es'] ,
+                'ca' => $strip_tags ? strip_tags($typology['name_ca']) : $typology['name_ca'] ,
+                'en' => $strip_tags ? strip_tags($typology['name_en']) : $typology['name_en'] ,
+                'fr' => $strip_tags ? strip_tags($typology['name_fr']) : $typology['name_fr'] ,
+                'de' => $strip_tags ? strip_tags($typology['name_de']) : $typology['name_de'] ,
+                'nl' => $strip_tags ? strip_tags($typology['name_nl']) : $typology['name_nl'] ,
+                'it' => $strip_tags ? strip_tags($typology['name_it']) : $typology['name_it'] ,
+                'ru' => $strip_tags ? strip_tags($typology['name_ru']) : $typology['name_ru']
             ) ,
             'description' => array(
-                'es' => strip_tags($typology['description_es']) ,
-                'ca' => strip_tags($typology['description_ca']) ,
-                'en' => strip_tags($typology['description_en']) ,
-                'fr' => strip_tags($typology['description_fr']) ,
-                'de' => strip_tags($typology['description_de']) ,
-                'nl' => strip_tags($typology['description_nl']) ,
-                'it' => strip_tags($typology['description_it']) ,
-                'ru' => strip_tags($typology['description_ru'])
+                'es' => $strip_tags ? strip_tags($typology['description_es']) : $typology['description_es'] ,
+                'ca' => $strip_tags ? strip_tags($typology['description_ca']) : $typology['description_ca'] ,
+                'en' => $strip_tags ? strip_tags($typology['description_en']) : $typology['description_en'] ,
+                'fr' => $strip_tags ? strip_tags($typology['description_fr']) : $typology['description_fr'] ,
+                'de' => $strip_tags ? strip_tags($typology['description_de']) : $typology['description_de'] ,
+                'nl' => $strip_tags ? strip_tags($typology['description_nl']) : $typology['description_nl'] ,
+                'it' => $strip_tags ? strip_tags($typology['description_it']) : $typology['description_it'] ,
+                'ru' => $strip_tags ? strip_tags($typology['description_ru']) : $typology['description_ru']
             ) ,
             'address' => array(
                 'address' => $typology['building_address'],
