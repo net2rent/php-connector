@@ -215,6 +215,9 @@ abstract class AbstractConnector
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
         }
+        if (isset($options['flexible'])) {
+            $params['flexible'] = $options['flexible'];
+        }
         if (isset($options['orderby'])) {
             $params['orderby'] = $options['orderby'];
         }
@@ -349,6 +352,7 @@ abstract class AbstractConnector
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
                     'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
+                    'restrictions' => isset($typology['restrictions']) ? $typology['restrictions'] : 0,
                     'online_reservation' => isset($typology['property_online_reservation']) ? $typology['property_online_reservation'] : null,
 					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
                     'property_meters'=> isset($typology['property_property_meters']) ? $typology['property_property_meters'] : null,
