@@ -113,6 +113,7 @@ abstract class AbstractConnector
      * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
+     * @param  boolean  $options['watermark'] Watermark in image
      * @param  boolean  $options['web'] 1/0 if 1, show available only if web_visible is 1
      * @param  string   $options['orderby'] Order by field
      * @param  integer  $options['orderdesc'] 1/0 if 1, order DESC, else order ASC
@@ -211,6 +212,10 @@ abstract class AbstractConnector
         $params['quality']=80;
         if (isset($options['quality'])) {
             $params['quality'] = $options['quality'];
+        }
+        $params['watermark']=1;
+        if (isset($options['watermark'])) {
+            $params['watermark'] = $options['watermark'];
         }
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
@@ -361,14 +366,15 @@ abstract class AbstractConnector
                     'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
 
-                    'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+                    'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
                             $this->apiBaseUrl,
                             $typology['id'],
                             $typology['image_id'],
                             $params['max_w'],
                             $params['max_h'],
-                            $params['quality']
-                            )
+                            $params['quality'],
+                            $params['watermark']
+                            )                    
                     : null,
                     'creation_date' => isset($typology['creation_date']) ? $typology['creation_date'] : null,
                     'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : null,
@@ -395,6 +401,7 @@ abstract class AbstractConnector
      * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
+     * @param  boolean  $options['watermark'] Watermark in image
      * @param  integer  $options['web'] 1/0 if 1, show available only if web_visible is 1
      * @return array  (items)
      */
@@ -420,6 +427,10 @@ abstract class AbstractConnector
         $params['quality']=80;
         if (isset($options['quality'])) {
             $params['quality'] = $options['quality'];
+        }
+        $params['watermark']=1;
+        if (isset($options['watermark'])) {
+            $params['watermark'] = $options['watermark'];
         }
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
@@ -470,13 +481,14 @@ abstract class AbstractConnector
                     'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
                     'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
                 ) ,
-                'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+                'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
                         $this->apiBaseUrl,
                         $image['typology_id'],
                         $image['id'],
                         $params['max_w'],
                         $params['max_h'],
-                        $params['quality']
+                        $params['quality'],
+                        $params['watermark']
                 )
             );
         }
