@@ -128,6 +128,7 @@ abstract class AbstractConnector
      * @param  boolean $options['only_rent_offer'] Filter only typologies with active and unexpired discounts
      * @param  boolean $options['only_sell_offer'] Filter only typologies with sell_offer_price > 0
      * @param  boolean $options['only_promotion'] Filter only typologies with active and unexpired discounts or puntual offers
+     * @param  string  $options['views'] Valid values: no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -250,6 +251,10 @@ abstract class AbstractConnector
         if (isset($options['only_promotion'])) {
             $params['only_promotion'] = $options['only_promotion'];
         }
+        if (isset($options['views'])) {
+            $params['views'] = $options['views'];
+        }
+        
         $params['lg'] = $this->lg;
 
         $typologies = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
