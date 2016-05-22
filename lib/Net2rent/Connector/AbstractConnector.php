@@ -385,7 +385,8 @@ abstract class AbstractConnector
                     'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : null,
 
                     'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : 0,
-                    'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0
+                    'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
+                    'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0
                 );
             }
 
@@ -626,6 +627,7 @@ abstract class AbstractConnector
 
             'first_property_id' => $typology['property_id'],
             'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
+            'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0,
             'rent_conditions' => (isset($typology['rent_conditions'])) ? $typology['rent_conditions'] : null,
             'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
