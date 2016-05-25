@@ -14,6 +14,7 @@ class Portal extends AbstractConnector
         'companies' => '/portals/{{portal}}/companies',
         'company' => '/companies/%s',
         'property_status' => '/properties/%s/propertystatus',
+        'property_accessories' => '/properties/%s/propertyaccessories',
         'availability_portals' => '/typologies/%s/portal/{{portal_id}}/availability_portals',
         'availability_property' => '/typologies/%s/availability',
         'typology_prices' => '/typologies/%s/pricecalendar',
