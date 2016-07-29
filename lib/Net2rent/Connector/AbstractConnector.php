@@ -632,7 +632,8 @@ abstract class AbstractConnector
             'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
             'perc_initial_payment' => (isset($typology['perc_initial_payment'])) ? $typology['perc_initial_payment'] : null,
-            'deposit' => (isset($typology['property_deposit'])) ? $typology['property_deposit'] : 0
+            'deposit' => (isset($typology['property_deposit'])) ? $typology['property_deposit'] : 0,
+            'deposit_type' => (isset($typology['property_deposit_type']) &&  $typology['property_deposit_type']) ? $typology['property_deposit_type'] : 'value'
         );
 
         return $property;
