@@ -18,6 +18,7 @@ class Portal extends AbstractConnector
         'availability_portals' => '/typologies/%s/portal/{{portal_id}}/availability_portals',
         'availability_property' => '/typologies/%s/availability',
         'typology_prices' => '/typologies/%s/pricecalendar',
+        'typology_portal' => '/typologies/%s/portals/{{portal_id}}',
         'contacts' => '/portals/{{portal}}/contacts',
         'contacts_modify' => '/contacts/%s',
         'booking' => '/portals/{{portal}}/bookings',
@@ -299,6 +300,18 @@ class Portal extends AbstractConnector
             );
         }
         return $pricesPeriods;
+    }
+    
+    /**
+     * modify property portal parameters
+     * @param  integer $propertyId Property id
+     * @param string $params['hotel_id']
+     * @param string $params['room_id']
+     */
+    public function modifyPropertyPortal($propertyId,$params = array())
+    {
+        $endPoint = $this->getEndPoint('typology_portal');
+        $this->api(sprintf($endPoint, $propertyId), 'PUT', $params);
     }
 
     /**
