@@ -576,6 +576,7 @@ abstract class AbstractConnector
             'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
             'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
             'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
+            'parking_text'=> isset($typology['property_parking_text']) ? $typology['property_parking_text'] : '',
             'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
             'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
             'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
