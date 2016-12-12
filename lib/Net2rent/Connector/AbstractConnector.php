@@ -567,6 +567,7 @@ abstract class AbstractConnector
             'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
             'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
             'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
+            'vat' => isset($typology['vat']) ? $typology['vat'] : 0,
 
             'online_reservation' => (isset($typology['default_online_reservation'])) ? $typology['default_online_reservation'] : null,
 
