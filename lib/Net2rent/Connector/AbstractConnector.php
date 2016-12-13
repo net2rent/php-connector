@@ -610,7 +610,7 @@ abstract class AbstractConnector
             
             'active_unexpired_promotions'=> isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
 
-            'agency_id'=> isset($typology['prices_agency_id']) ? $typology['prices_agency_id'] : 0,
+            'agency_id'=> isset($typology['agency_id']) ? $typology['agency_id'] : (isset($typology['prices_agency_id']) ? $typology['prices_agency_id'] : 0),
 
             'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
                             $this->apiBaseUrl,
