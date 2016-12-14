@@ -267,7 +267,7 @@ abstract class AbstractConnector
                     'id' => $typology['id'],
                     'name' => $typology['name'],
                     'ref' => $typology['property_ref_property_string'],
-                    'price_from' => $typology['price_from'],
+                    'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
                     'room_id' => isset($typology['room_id']) ? $typology['room_id'] : ""
                 );
@@ -370,7 +370,12 @@ abstract class AbstractConnector
                     'balcony'=> isset($typology['balcony']) ? $typology['balcony'] : null,
                     'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
-
+                    
+                    'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
+                    'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
+                    'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
+                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+                    
                     'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
                             $this->apiBaseUrl,
                             $typology['id'],
