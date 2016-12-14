@@ -101,7 +101,7 @@ class Publisher extends AbstractConnector
         $tmpfile = tempnam(sys_get_temp_dir() , 'n2rimage');
         foreach ($imagesToInsert as $image) {
             $response = $this->api($endPoint, 'POST', array(
-                'name' => $image['image'],
+                'name' => isset($image['name']) && $image['name'] ? $image['name'] : $image['image'],
                 'active' => true
             ));
             $imageId = $response['id'];
