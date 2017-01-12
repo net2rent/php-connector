@@ -27,6 +27,7 @@ class Web extends AbstractConnector
         'booking_search' => '/companies/{{company}}/bookings',
         'booking_person' => '/bookings/%s/people/',
         'booking_accessory' => '/bookings/%s/accessories/',
+        'payments' => '/bookings/%s/payments',
         'payment' => '/bookings/%s/payments/',
         'comments' => '/typologies/%s/clientcomments',
         'puntualoffers' => '/companies/{{company}}/puntualoffers',
@@ -433,6 +434,17 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('booking_accessory');
         return $this->api(sprintf($endPoint,$bookingAccessoryOptions['booking_id']), 'POST', $bookingAccessoryOptions);
+    }
+    
+    public function getPayments($bookingId)
+    {
+        $endPoint = $this->getEndPoint('payments');
+        $payments=$this->api(sprintf($endPoint,$bookingId), 'GET');
+        
+        return array(
+            'total' => count($payments),
+            'items' => $payments
+        );
     }
     
     public function getPayment($bookingId,$paymentId)
