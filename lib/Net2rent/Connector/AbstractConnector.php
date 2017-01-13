@@ -395,6 +395,16 @@ abstract class AbstractConnector
 					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
                     'property_meters'=> isset($typology['property_property_meters']) ? $typology['property_property_meters'] : null,
                     'parcel_meters'=> isset($typology['property_parcel_meters']) ? $typology['property_parcel_meters'] : null,
+                    'construction_year'=> isset($typology['building_construction_year']) ? $typology['building_construction_year'] : '',
+
+                    'property_youtube_url'=> isset($typology['property_youtube_url']) ? $typology['property_youtube_url'] : '',
+                    'energy_consumption_kwh_m2_year'=> isset($typology['property_energy_consumption_kwh_m2_year']) ? $typology['property_energy_consumption_kwh_m2_year'] : '',
+                    'emissions_kg_co2_m2_year'=> isset($typology['property_emissions_kg_co2_m2_year']) ? $typology['property_emissions_kg_co2_m2_year'] : '',
+
+                    'active_unexpired_promotions'=> isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
+
+                    'agency_id'=> isset($typology['agency_id']) ? $typology['agency_id'] : (isset($typology['prices_agency_id']) ? $typology['prices_agency_id'] : 0),
+                    
                     'balcony'=> isset($typology['balcony']) ? $typology['balcony'] : null,
                     'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
