@@ -261,7 +261,9 @@ class Portal extends AbstractConnector
         $price = null;
         $norefoundprice = null;
         $minimumStay = null;
-
+        $entryDays = null;
+        $outDays = null;
+        
         foreach($typologyDaysPrices as $typologyDayPrice) {
             $rentPrice = (isset($typologyDayPrice['rentprice'])) ? $typologyDayPrice['rentprice'] : 0;
             $discountPrice = (isset($typologyDayPrice['discountprice'])) ? $typologyDayPrice['discountprice'] : 0;
@@ -270,7 +272,9 @@ class Portal extends AbstractConnector
             $newPrice = $rentPrice - $discountPrice;
             $newNoRefoundPrice = $norefoundRentPrice - $norefoundDiscountPrice;
             $newMinimumStay = (isset($typologyDayPrice['minimum_nights'])) ? $typologyDayPrice['minimum_nights'] : 1;
-
+            $newEntryDays = (isset($typologyDayPrice['entry_days'])) ? $typologyDayPrice['entry_days'] : null;
+            $newOutDays = (isset($typologyDayPrice['out_days'])) ? $typologyDayPrice['out_days'] : null;
+            
             $isDifferent = (bool)(($price !== $newPrice) || ($minimumStay !== $newMinimumStay) || ($norefoundprice !== $newNoRefoundPrice));
 
             if($isDifferent) {
@@ -281,12 +285,16 @@ class Portal extends AbstractConnector
                         'minimum_stay' => $minimumStay,
                         'start_date' => $initialPriceDay,
                         'end_date' => $endPriceDay,
+                        'entry_days' => $entryDays,
+                        'out_days' => $outDays,
                     );
                 }
                 $initialPriceDay = $typologyDayPrice['day'];
                 $price = $newPrice;
                 $norefoundprice = $newNoRefoundPrice;
                 $minimumStay = $newMinimumStay;
+                $entryDays = $newEntryDays;
+                $outDays = $newOutDays;
             }
             $endPriceDay = $typologyDayPrice['day'];
         }
@@ -297,6 +305,8 @@ class Portal extends AbstractConnector
                 'minimum_stay' => $minimumStay,
                 'start_date' => $initialPriceDay,
                 'end_date' => $endPriceDay,
+                'entry_days' => $entryDays,
+                'out_days' => $outDays,
             );
         }
         return $pricesPeriods;
