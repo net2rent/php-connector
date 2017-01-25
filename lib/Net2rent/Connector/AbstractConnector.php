@@ -412,8 +412,6 @@ abstract class AbstractConnector
 
                     'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
-                    'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
-                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
                     
                     'time_in'=>isset($typology['time_in']) ? $typology['time_in'] : (isset($typology['time_in']) ? $typology['time_in'] : null),
                     'time_out'=>isset($typology['time_out']) ? $typology['time_out'] : (isset($typology['time_out']) ? $typology['time_out'] : null),
@@ -435,6 +433,14 @@ abstract class AbstractConnector
                     'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
                     'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0,
                     'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
+                    
+                    // typology_portal fields
+                    'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
+                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+                    'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
+                    'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
+                    'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
+                    'cleaning_fee' => isset($typology['cleaning_fee']) ? $typology['cleaning_fee'] : "",
                 );
             }
 
@@ -688,7 +694,15 @@ abstract class AbstractConnector
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
             'perc_initial_payment' => (isset($typology['perc_initial_payment'])) ? $typology['perc_initial_payment'] : null,
             'deposit' => (isset($typology['property_deposit'])) ? $typology['property_deposit'] : 0,
-            'deposit_type' => (isset($typology['property_deposit_type']) &&  $typology['property_deposit_type']) ? $typology['property_deposit_type'] : 'value'
+            'deposit_type' => (isset($typology['property_deposit_type']) &&  $typology['property_deposit_type']) ? $typology['property_deposit_type'] : 'value',
+            
+            // typology_portal fields
+            'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
+            'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+            'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
+            'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
+            'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
+            'cleaning_fee' => isset($typology['cleaning_fee']) ? $typology['cleaning_fee'] : "",
         );
 
         return $property;
