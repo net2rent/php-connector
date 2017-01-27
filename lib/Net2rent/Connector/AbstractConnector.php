@@ -129,6 +129,7 @@ abstract class AbstractConnector
      * @param  boolean $options['only_sell_offer'] Filter only typologies with sell_offer_price > 0
      * @param  boolean $options['only_promotion'] Filter only typologies with active and unexpired discounts or puntual offers
      * @param  string  $options['views'] Valid values: no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views
+     * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -254,7 +255,12 @@ abstract class AbstractConnector
         if (isset($options['views'])) {
             $params['views'] = $options['views'];
         }
-        
+        $params['images_http_https']='https';
+        $images_http_https_values=array('http','https');
+        if (isset($options['images_http_https'])) {
+            $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
+        }
+     
         $params['lg'] = $this->lg;
 
         $typologies = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
@@ -417,7 +423,7 @@ abstract class AbstractConnector
                     'time_out'=>isset($typology['time_out']) ? $typology['time_out'] : (isset($typology['time_out']) ? $typology['time_out'] : null),
                     
                     'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-                            $this->apiBaseUrl,
+                            isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
                             $typology['id'],
                             $typology['image_id'],
                             $params['max_w'],
@@ -463,6 +469,7 @@ abstract class AbstractConnector
      * @param  integer  $options['quality'] JPEG quality percent of image
      * @param  boolean  $options['watermark'] Watermark in image
      * @param  integer  $options['web'] 1/0 if 1, show available only if web_visible is 1
+     * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items)
      */
     public function getProperty($property_id, array $options = array(),$strip_tags=true)
@@ -494,6 +501,11 @@ abstract class AbstractConnector
         }
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
+        }
+        $params['images_http_https']='https';
+        $images_http_https_values=array('http','https');
+        if (isset($options['images_http_https'])) {
+            $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
         }
         $params['lg'] = $this->lg;
         
@@ -542,7 +554,7 @@ abstract class AbstractConnector
                     'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
                 ) ,
                 'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-                        $this->apiBaseUrl,
+                        isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
                         $image['typology_id'],
                         $image['id'],
                         $params['max_w'],
