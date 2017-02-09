@@ -128,7 +128,14 @@ abstract class AbstractConnector
      * @param  boolean $options['only_rent_offer'] Filter only typologies with active and unexpired discounts
      * @param  boolean $options['only_sell_offer'] Filter only typologies with sell_offer_price > 0
      * @param  boolean $options['only_promotion'] Filter only typologies with active and unexpired discounts or puntual offers
-     * @param  string  $options['views'] Valid values: no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views
+     * @param  string $options['views'] Valid values: [no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views, communal_area_views, golf_course_views]
+     * @param  boolean  $options['parking_garage'] 1/0 if 1, show properties with parking/garage
+     * @param  boolean  $options['garden'] 1/0 if 1, show properties with garden
+     * @param  boolean  $options['pets'] 1/0 if 1, show properties with pets allowed
+     * @param  boolean  $options['wifi'] 1/0 if 1, show properties with wifi
+     * @param  boolean  $options['air_conditioning'] 1/0 if 1, show properties with air_conditioning
+     * @param  boolean  $options['satellite_tv'] 1/0 if 1, show properties with satellite_tv
+     * @param  boolean  $options['barbecue'] 1/0 if 1, show properties with barbecue
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items|total)
      */
@@ -254,6 +261,27 @@ abstract class AbstractConnector
         }
         if (isset($options['views'])) {
             $params['views'] = $options['views'];
+        }
+        if (isset($options['parking_garage'])) {
+            $params['parking_garage'] = $options['parking_garage'];
+        }
+        if (isset($options['garden'])) {
+            $params['garden'] = $options['garden'];
+        }
+        if (isset($options['pets'])) {
+            $params['pets'] = $options['pets'];
+        }
+        if (isset($options['wifi'])) {
+            $params['wifi'] = $options['wifi'];
+        }
+        if (isset($options['air_conditioning'])) {
+            $params['air_conditioning'] = $options['air_conditioning'];
+        }
+        if (isset($options['satellite_tv'])) {
+            $params['satellite_tv'] = $options['satellite_tv'];
+        }
+        if (isset($options['barbecue'])) {
+            $params['barbecue'] = $options['barbecue'];
         }
         $params['images_http_https']='https';
         $images_http_https_values=array('http','https');
