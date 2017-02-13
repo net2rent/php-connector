@@ -37,7 +37,10 @@ class Web extends AbstractConnector
         'discounts_property' => '/typologies/%s/discounts',
         'properties_building_types' => '/companies/{{company}}/properties-building-types',
         'properties_zones' => '/companies/{{company}}/properties-zones',
-        'hear_about_us' => '/enums/14/values'
+        'hear_about_us' => '/enums/14/values',
+        'companies_minimum_nights' => '/companies/{{company}}/baseprices/minimum_nights',
+        'companies_entry_days' => '/companies/{{company}}/baseprices/entry_days',
+        'companies_out_days' => '/companies/{{company}}/baseprices/out_days'
     );
     
     public function getCompany()
@@ -92,8 +95,8 @@ class Web extends AbstractConnector
             $availabilityPriceDay['norefoundprice']=$baseprice['norefoundprice']; // no refund price for this day
             $availabilityPriceDay['discountprice']=$baseprice['discountprice']; // discount price for this day
             $availabilityPriceDay['minimum_nights']=$baseprice['minimum_nights']; // minimum booking nights if is this entry day
-            $availabilityPriceDay['entry_days']=$baseprice['entry_days']; // possible entry days: -1=any day, 0=sunday, 1=monday, 2=tuesday, 3=wednesday, 4=thursday, 5=friday, 6=saturday
-            $availabilityPriceDay['out_days']=$baseprice['out_days']; // possible out days: -1=any day, 0=sunday, 1=monday, 2=tuesday, 3=wednesday, 4=thursday, 5=friday, 6=saturday
+            $availabilityPriceDay['checkin']=$baseprice['checkin']; // 1 if possible checkin this day, 0 if not
+            $availabilityPriceDay['checkout']=$baseprice['checkout']; // 1 if possible checkout this day, 0 if not
             $availabilityPriceDay['available']=(int)$baseprice['available']>0 ? 1 : 0; // available: 1=yes, 0=no
             
             $availabilityPricesDays[]=$availabilityPriceDay;
@@ -800,5 +803,26 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('hear_about_us');
         return $this->api($endPoint);
+    }
+    
+    public function getMinimumNights()
+    {
+        $endPoint = $this->getEndPoint('companies_minimum_nights');
+        $minimumNights=$this->api($endPoint);
+        return isset($minimumNights['minimum_nights']) ? (int)$minimumNights['minimum_nights'] : 1; 
+    }
+    
+    public function getEntryDays()
+    {
+        $endPoint = $this->getEndPoint('companies_entry_days');
+        $entryDays=$this->api($endPoint);
+        return isset($entryDays['entry_days']) ? $entryDays['entry_days'] : array() ;
+    }
+    
+    public function getOutDays()
+    {
+        $endPoint = $this->getEndPoint('companies_out_days');
+        $outDays=$this->api($endPoint);
+        return isset($outDays['out_days']) ? $outDays['out_days'] : array();
     }
 }
