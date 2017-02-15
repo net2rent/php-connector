@@ -443,6 +443,7 @@ abstract class AbstractConnector
                     'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
                     'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
+                    'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
 
                     'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
@@ -679,6 +680,7 @@ abstract class AbstractConnector
             'pool_sizes'=> isset($typology['pool_sizes']) ? $typology['pool_sizes'] : null,
             'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
             'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
+            'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
 
             'double_beds'=> isset($typology['property_double_beds']) ? $typology['property_double_beds'] : 0,
             'single_beds'=> isset($typology['property_single_beds']) ? $typology['property_single_beds'] : 0,
