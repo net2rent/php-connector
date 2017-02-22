@@ -498,6 +498,7 @@ abstract class AbstractConnector
      * @param  integer  $options['quality'] JPEG quality percent of image
      * @param  boolean  $options['watermark'] Watermark in image
      * @param  integer  $options['web'] 1/0 if 1, show available only if web_visible is 1
+     * @param  integer  $options['people'] , number of booking people for extra person pricem calculation
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items)
      */
@@ -530,6 +531,9 @@ abstract class AbstractConnector
         }
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
+        }
+        if (isset($options['people'])) {
+            $params['people'] = $options['people'];
         }
         $params['images_http_https']='https';
         $images_http_https_values=array('http','https');
