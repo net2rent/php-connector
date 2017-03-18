@@ -168,7 +168,19 @@ class Web extends AbstractConnector
         foreach($overwrittenDays as $overwrittenDay) {
             $overwrittenDaysIndexed[$overwrittenDay['day']]=$overwrittenDay;
         }
-                
+        
+        // get baseprices
+        $endPoint3=sprintf('%s/typologies/%s/pricecalendar?', 
+                        $this->apiBaseUrl, 
+                        $property['id']
+                );
+        $basePrices = $this->api(sprintf($endPoint3 . '%s', http_build_query($params)));
+        $basePricesDaysIndexed=array();
+        // index overwritten days by day
+        foreach($basePrices as $basePrice) {
+            $basePricesDaysIndexed[$basePrice['day']]=$basePrice;
+        }
+        
         if(isset($property['agency_id']) && $property['agency_id']) {
         
             $endPoint=sprintf('%s/agencies/%s/seasons/calendar', 
@@ -222,10 +234,11 @@ class Web extends AbstractConnector
                                 $property['id']
                             );
                             $info=$this->api(sprintf($endPointSeason . '?%s', http_build_query($params_season)));
+                            $minimum_nights=isset($basePricesDaysIndexed[$day['day']]) ? $basePricesDaysIndexed[$day['day']]['minimum_nights'] : null; 
                             
                             // create season only if was not created in early dates
                             if($j==0) {
-                                $seasonsRates[$i]=array('season_id'=>$seasonId, 'name'=>$info['season_name'], 'rentprice'=>$info['rentprice'], 'day_week'=>$info['day_week'], 'minimum_nights'=>$info['minimum_nights'] >-1 ? $info['minimum_nights'] : $day['minimum_nights'] );
+                                $seasonsRates[$i]=array('season_id'=>$seasonId, 'name'=>$info['season_name'], 'rentprice'=>$info['rentprice'], 'day_week'=>$info['day_week'],'minimum_nights'=>$minimum_nights );
                             }
                             $seasonsRates[$i]['dates'][$j]=array('start_day'=>$day['day']);
                             $prev=$day['day'];
