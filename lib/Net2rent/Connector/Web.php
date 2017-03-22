@@ -578,16 +578,59 @@ class Web extends AbstractConnector
         
         $puntualoffers_with_image=array();
         foreach($puntualoffers as $puntualoffer) {
-            $puntualoffer['image']=(isset($puntualoffer['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+            $puntualoffer['name_lg'] = array(
+                        'es' => strip_tags($puntualoffer['name_es']) ,
+                        'ca' => strip_tags($puntualoffer['name_ca']) ,
+                        'en' => strip_tags($puntualoffer['name_en']) ,
+                        'fr' => strip_tags($puntualoffer['name_fr']) ,
+                        'de' => strip_tags($puntualoffer['name_de']) ,
+                        'nl' => strip_tags($puntualoffer['name_nl']) ,
+                        'it' => strip_tags($puntualoffer['name_it']) ,
+                        'ru' => strip_tags($puntualoffer['name_ru'])
+            );
+            $puntualoffer['subtitle_lg'] = array(
+                        'es' => strip_tags($puntualoffer['subtitle_es']) ,
+                        'ca' => strip_tags($puntualoffer['subtitle_ca']) ,
+                        'en' => strip_tags($puntualoffer['subtitle_en']) ,
+                        'fr' => strip_tags($puntualoffer['subtitle_fr']) ,
+                        'de' => strip_tags($puntualoffer['subtitle_de']) ,
+                        'nl' => strip_tags($puntualoffer['subtitle_nl']) ,
+                        'it' => strip_tags($puntualoffer['subtitle_it']) ,
+                        'ru' => strip_tags($puntualoffer['subtitle_ru'])
+            );
+            $puntualoffer['text_lg'] = array(
+                        'es' => strip_tags($puntualoffer['text_es']) ,
+                        'ca' => strip_tags($puntualoffer['text_ca']) ,
+                        'en' => strip_tags($puntualoffer['text_en']) ,
+                        'fr' => strip_tags($puntualoffer['text_fr']) ,
+                        'de' => strip_tags($puntualoffer['text_de']) ,
+                        'nl' => strip_tags($puntualoffer['text_nl']) ,
+                        'it' => strip_tags($puntualoffer['text_it']) ,
+                        'ru' => strip_tags($puntualoffer['text_ru'])
+            );
+            
+            $puntualoffer['image']=sprintf('%s/promotions/puntualoffers/%s/image?max_w=%s&max_h=%s&quality=%s',
                         $this->apiBaseUrl,
-                        $puntualoffer['typology_id'],
-                        $puntualoffer['image_id'],
+                        $puntualoffer['id'],
                         $params['max_w'],
                         $params['max_h'],
                         $params['quality']
-                        )
-                : null;
-            $puntualoffers_with_image[]=$puntualoffer;
+            );
+            
+            // if puntualoffer has no image, get image from typology
+            $file_headers = get_headers($puntualoffer['image']);
+
+            if($file_headers[0] != 'HTTP/1.1 200 OK') {
+                $puntualoffer['image']=(isset($puntualoffer['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+                            $this->apiBaseUrl,
+                            $puntualoffer['typology_id'],
+                            $puntualoffer['image_id'],
+                            $params['max_w'],
+                            $params['max_h'],
+                            $params['quality']
+                            )
+                    : null;
+            }
         }
         
         return array(
