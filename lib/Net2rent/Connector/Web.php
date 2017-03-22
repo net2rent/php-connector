@@ -631,6 +631,8 @@ class Web extends AbstractConnector
                             )
                     : null;
             }
+            
+            $puntualoffers_with_image[]=$puntualoffer;
         }
         
         return array(
