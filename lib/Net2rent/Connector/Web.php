@@ -37,7 +37,10 @@ class Web extends AbstractConnector
         'discounts_property' => '/typologies/%s/discounts',
         'properties_building_types' => '/companies/{{company}}/properties-building-types',
         'properties_zones' => '/companies/{{company}}/properties-zones',
-        'hear_about_us' => '/enums/14/values'
+        'hear_about_us' => '/enums/14/values',
+        'companies_minimum_nights' => '/companies/{{company}}/baseprices/minimum_nights',
+        'companies_entry_days' => '/companies/{{company}}/baseprices/entry_days',
+        'companies_out_days' => '/companies/{{company}}/baseprices/out_days'
     );
     
     public function getCompany()
@@ -92,8 +95,8 @@ class Web extends AbstractConnector
             $availabilityPriceDay['norefoundprice']=$baseprice['norefoundprice']; // no refund price for this day
             $availabilityPriceDay['discountprice']=$baseprice['discountprice']; // discount price for this day
             $availabilityPriceDay['minimum_nights']=$baseprice['minimum_nights']; // minimum booking nights if is this entry day
-            $availabilityPriceDay['entry_days']=$baseprice['entry_days']; // possible entry days: -1=any day, 0=sunday, 1=monday, 2=tuesday, 3=wednesday, 4=thursday, 5=friday, 6=saturday
-            $availabilityPriceDay['out_days']=$baseprice['out_days']; // possible out days: -1=any day, 0=sunday, 1=monday, 2=tuesday, 3=wednesday, 4=thursday, 5=friday, 6=saturday
+            $availabilityPriceDay['checkin']=$baseprice['checkin']; // 1 if possible checkin this day, 0 if not
+            $availabilityPriceDay['checkout']=$baseprice['checkout']; // 1 if possible checkout this day, 0 if not
             $availabilityPriceDay['available']=(int)$baseprice['available']>0 ? 1 : 0; // available: 1=yes, 0=no
             
             $availabilityPricesDays[]=$availabilityPriceDay;
@@ -165,7 +168,19 @@ class Web extends AbstractConnector
         foreach($overwrittenDays as $overwrittenDay) {
             $overwrittenDaysIndexed[$overwrittenDay['day']]=$overwrittenDay;
         }
-                
+        
+        // get baseprices
+        $endPoint3=sprintf('%s/typologies/%s/pricecalendar?', 
+                        $this->apiBaseUrl, 
+                        $property['id']
+                );
+        $basePrices = $this->api(sprintf($endPoint3 . '%s', http_build_query($params)));
+        $basePricesDaysIndexed=array();
+        // index overwritten days by day
+        foreach($basePrices as $basePrice) {
+            $basePricesDaysIndexed[$basePrice['day']]=$basePrice;
+        }
+        
         if(isset($property['agency_id']) && $property['agency_id']) {
         
             $endPoint=sprintf('%s/agencies/%s/seasons/calendar', 
@@ -219,10 +234,11 @@ class Web extends AbstractConnector
                                 $property['id']
                             );
                             $info=$this->api(sprintf($endPointSeason . '?%s', http_build_query($params_season)));
+                            $minimum_nights=isset($basePricesDaysIndexed[$day['day']]) ? $basePricesDaysIndexed[$day['day']]['minimum_nights'] : null; 
                             
                             // create season only if was not created in early dates
                             if($j==0) {
-                                $seasonsRates[$i]=array('season_id'=>$seasonId, 'name'=>$info['season_name'], 'rentprice'=>$info['rentprice'], 'day_week'=>$info['day_week'], 'minimum_nights'=>$info['minimum_nights'] >-1 ? $info['minimum_nights'] : $day['minimum_nights'] );
+                                $seasonsRates[$i]=array('season_id'=>$seasonId, 'name'=>$info['season_name'], 'rentprice'=>$info['rentprice'], 'day_week'=>$info['day_week'],'minimum_nights'=>$minimum_nights );
                             }
                             $seasonsRates[$i]['dates'][$j]=array('start_day'=>$day['day']);
                             $prev=$day['day'];
@@ -562,15 +578,60 @@ class Web extends AbstractConnector
         
         $puntualoffers_with_image=array();
         foreach($puntualoffers as $puntualoffer) {
-            $puntualoffer['image']=(isset($puntualoffer['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+            $puntualoffer['name_lg'] = array(
+                        'es' => strip_tags($puntualoffer['name_es']) ,
+                        'ca' => strip_tags($puntualoffer['name_ca']) ,
+                        'en' => strip_tags($puntualoffer['name_en']) ,
+                        'fr' => strip_tags($puntualoffer['name_fr']) ,
+                        'de' => strip_tags($puntualoffer['name_de']) ,
+                        'nl' => strip_tags($puntualoffer['name_nl']) ,
+                        'it' => strip_tags($puntualoffer['name_it']) ,
+                        'ru' => strip_tags($puntualoffer['name_ru'])
+            );
+            $puntualoffer['subtitle_lg'] = array(
+                        'es' => strip_tags($puntualoffer['subtitle_es']) ,
+                        'ca' => strip_tags($puntualoffer['subtitle_ca']) ,
+                        'en' => strip_tags($puntualoffer['subtitle_en']) ,
+                        'fr' => strip_tags($puntualoffer['subtitle_fr']) ,
+                        'de' => strip_tags($puntualoffer['subtitle_de']) ,
+                        'nl' => strip_tags($puntualoffer['subtitle_nl']) ,
+                        'it' => strip_tags($puntualoffer['subtitle_it']) ,
+                        'ru' => strip_tags($puntualoffer['subtitle_ru'])
+            );
+            $puntualoffer['text_lg'] = array(
+                        'es' => strip_tags($puntualoffer['text_es']) ,
+                        'ca' => strip_tags($puntualoffer['text_ca']) ,
+                        'en' => strip_tags($puntualoffer['text_en']) ,
+                        'fr' => strip_tags($puntualoffer['text_fr']) ,
+                        'de' => strip_tags($puntualoffer['text_de']) ,
+                        'nl' => strip_tags($puntualoffer['text_nl']) ,
+                        'it' => strip_tags($puntualoffer['text_it']) ,
+                        'ru' => strip_tags($puntualoffer['text_ru'])
+            );
+            
+            $puntualoffer['image']=sprintf('%s/promotions/puntualoffers/%s/image?max_w=%s&max_h=%s&quality=%s',
                         $this->apiBaseUrl,
-                        $puntualoffer['typology_id'],
-                        $puntualoffer['image_id'],
+                        $puntualoffer['id'],
                         $params['max_w'],
                         $params['max_h'],
                         $params['quality']
-                        )
-                : null;
+            );
+            
+            // if puntualoffer has no image, get image from typology
+            $file_headers = get_headers($puntualoffer['image']);
+
+            if($file_headers[0] != 'HTTP/1.1 200 OK') {
+                $puntualoffer['image']=(isset($puntualoffer['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s',
+                            $this->apiBaseUrl,
+                            $puntualoffer['typology_id'],
+                            $puntualoffer['image_id'],
+                            $params['max_w'],
+                            $params['max_h'],
+                            $params['quality']
+                            )
+                    : null;
+            }
+            
             $puntualoffers_with_image[]=$puntualoffer;
         }
         
@@ -800,5 +861,26 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('hear_about_us');
         return $this->api($endPoint);
+    }
+    
+    public function getMinimumNights()
+    {
+        $endPoint = $this->getEndPoint('companies_minimum_nights');
+        $minimumNights=$this->api($endPoint);
+        return isset($minimumNights['minimum_nights']) ? (int)$minimumNights['minimum_nights'] : 1; 
+    }
+    
+    public function getEntryDays()
+    {
+        $endPoint = $this->getEndPoint('companies_entry_days');
+        $entryDays=$this->api($endPoint);
+        return isset($entryDays['entry_days']) ? $entryDays['entry_days'] : array() ;
+    }
+    
+    public function getOutDays()
+    {
+        $endPoint = $this->getEndPoint('companies_out_days');
+        $outDays=$this->api($endPoint);
+        return isset($outDays['out_days']) ? $outDays['out_days'] : array();
     }
 }

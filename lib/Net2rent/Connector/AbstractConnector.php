@@ -128,7 +128,15 @@ abstract class AbstractConnector
      * @param  boolean $options['only_rent_offer'] Filter only typologies with active and unexpired discounts
      * @param  boolean $options['only_sell_offer'] Filter only typologies with sell_offer_price > 0
      * @param  boolean $options['only_promotion'] Filter only typologies with active and unexpired discounts or puntual offers
-     * @param  string  $options['views'] Valid values: no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views
+     * @param  string $options['views'] Valid values: [no_views, view_of_fields, street_view, seaview, mountain_views, pool_view, lake_view, panoramic_view, beachfront_view, second_line_sea_views, first_line_sea_views, canal_views, communal_area_views, golf_course_views]
+     * @param  boolean  $options['parking_garage'] 1/0 if 1, show properties with parking/garage
+     * @param  boolean  $options['garden'] 1/0 if 1, show properties with garden
+     * @param  boolean  $options['pets'] 1/0 if 1, show properties with pets allowed
+     * @param  boolean  $options['wifi'] 1/0 if 1, show properties with wifi
+     * @param  boolean  $options['air_conditioning'] 1/0 if 1, show properties with air_conditioning
+     * @param  boolean  $options['satellite_tv'] 1/0 if 1, show properties with satellite_tv
+     * @param  boolean  $options['barbecue'] 1/0 if 1, show properties with barbecue
+     * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -254,7 +262,33 @@ abstract class AbstractConnector
         if (isset($options['views'])) {
             $params['views'] = $options['views'];
         }
-        
+        if (isset($options['parking_garage'])) {
+            $params['parking_garage'] = $options['parking_garage'];
+        }
+        if (isset($options['garden'])) {
+            $params['garden'] = $options['garden'];
+        }
+        if (isset($options['pets'])) {
+            $params['pets'] = $options['pets'];
+        }
+        if (isset($options['wifi'])) {
+            $params['wifi'] = $options['wifi'];
+        }
+        if (isset($options['air_conditioning'])) {
+            $params['air_conditioning'] = $options['air_conditioning'];
+        }
+        if (isset($options['satellite_tv'])) {
+            $params['satellite_tv'] = $options['satellite_tv'];
+        }
+        if (isset($options['barbecue'])) {
+            $params['barbecue'] = $options['barbecue'];
+        }
+        $params['images_http_https']='https';
+        $images_http_https_values=array('http','https');
+        if (isset($options['images_http_https'])) {
+            $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
+        }
+     
         $params['lg'] = $this->lg;
 
         $typologies = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
@@ -409,17 +443,16 @@ abstract class AbstractConnector
                     'terrace'=> isset($typology['terrace']) ? $typology['terrace'] : null,
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
                     'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
+                    'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
 
                     'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
-                    'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
-                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
                     
                     'time_in'=>isset($typology['time_in']) ? $typology['time_in'] : (isset($typology['time_in']) ? $typology['time_in'] : null),
                     'time_out'=>isset($typology['time_out']) ? $typology['time_out'] : (isset($typology['time_out']) ? $typology['time_out'] : null),
                     
                     'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-                            $this->apiBaseUrl,
+                            isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
                             $typology['id'],
                             $typology['image_id'],
                             $params['max_w'],
@@ -435,6 +468,14 @@ abstract class AbstractConnector
                     'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
                     'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0,
                     'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
+                    
+                    // typology_portal fields
+                    'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
+                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+                    'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
+                    'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
+                    'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
+                    'cleaning_fee' => isset($typology['cleaning_fee']) ? $typology['cleaning_fee'] : "",
                 );
             }
 
@@ -457,6 +498,8 @@ abstract class AbstractConnector
      * @param  integer  $options['quality'] JPEG quality percent of image
      * @param  boolean  $options['watermark'] Watermark in image
      * @param  integer  $options['web'] 1/0 if 1, show available only if web_visible is 1
+     * @param  integer  $options['people'] , number of booking people for extra person pricem calculation
+     * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items)
      */
     public function getProperty($property_id, array $options = array(),$strip_tags=true)
@@ -488,6 +531,14 @@ abstract class AbstractConnector
         }
         if (isset($options['web'])) {
             $params['web'] = $options['web'];
+        }
+        if (isset($options['people'])) {
+            $params['people'] = $options['people'];
+        }
+        $params['images_http_https']='https';
+        $images_http_https_values=array('http','https');
+        if (isset($options['images_http_https'])) {
+            $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
         }
         $params['lg'] = $this->lg;
         
@@ -536,7 +587,7 @@ abstract class AbstractConnector
                     'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
                 ) ,
                 'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-                        $this->apiBaseUrl,
+                        isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
                         $image['typology_id'],
                         $image['id'],
                         $params['max_w'],
@@ -633,6 +684,7 @@ abstract class AbstractConnector
             'pool_sizes'=> isset($typology['pool_sizes']) ? $typology['pool_sizes'] : null,
             'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
             'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
+            'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
 
             'double_beds'=> isset($typology['property_double_beds']) ? $typology['property_double_beds'] : 0,
             'single_beds'=> isset($typology['property_single_beds']) ? $typology['property_single_beds'] : 0,
@@ -688,7 +740,15 @@ abstract class AbstractConnector
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
             'perc_initial_payment' => (isset($typology['perc_initial_payment'])) ? $typology['perc_initial_payment'] : null,
             'deposit' => (isset($typology['property_deposit'])) ? $typology['property_deposit'] : 0,
-            'deposit_type' => (isset($typology['property_deposit_type']) &&  $typology['property_deposit_type']) ? $typology['property_deposit_type'] : 'value'
+            'deposit_type' => (isset($typology['property_deposit_type']) &&  $typology['property_deposit_type']) ? $typology['property_deposit_type'] : 'value',
+            
+            // typology_portal fields
+            'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
+            'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+            'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
+            'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
+            'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
+            'cleaning_fee' => isset($typology['cleaning_fee']) ? $typology['cleaning_fee'] : "",
         );
 
         return $property;
@@ -726,8 +786,11 @@ abstract class AbstractConnector
         $accessoriesReturn=array();
         
         foreach($accessories as $accessory) {
-            // ignore non public accessories
+            // ignore non public accessories or inactive
             if(isset($accessory['public']) && !(int)$accessory['public']) {
+                continue;
+            }
+            if(isset($accessory['active']) && !(int)$accessory['active']) {
                 continue;
             }
           
