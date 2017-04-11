@@ -788,8 +788,11 @@ abstract class AbstractConnector
         $accessoriesReturn=array();
         
         foreach($accessories as $accessory) {
-            // ignore non public accessories
+            // ignore non public accessories or inactive
             if(isset($accessory['public']) && !(int)$accessory['public']) {
+                continue;
+            }
+            if(isset($accessory['active']) && !(int)$accessory['active']) {
                 continue;
             }
           
