@@ -326,6 +326,7 @@ abstract class AbstractConnector
                 $properties[] = array(
                     'id' => $typology['id'],
                     'name' => $typology['name'],
+					'building_name' => $typology['building_name'],
                     'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
                     'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
 					'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
@@ -602,6 +603,7 @@ abstract class AbstractConnector
         $property = array(
             'id' => $typology['id'],
             'name' => $typology['name'],
+			'building_name' => $typology['building_name'],
             'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
             'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
 			'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
