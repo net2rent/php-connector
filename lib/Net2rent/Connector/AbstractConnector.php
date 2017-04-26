@@ -376,7 +376,17 @@ abstract class AbstractConnector
                     'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
                     'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
                     'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
-                    'parking_text'=> isset($typology['property_parking_text']) ? $typology['property_parking_text'] : '',
+                    'parking_text'=> 
+						array(
+								'ca' => isset($typology['property_parking_text_ca']) ? $typology['property_parking_text_ca'] : '',
+								'es' => isset($typology['property_parking_text_es']) ? $typology['property_parking_text_es'] : '',
+								'en' => isset($typology['property_parking_text_en']) ? $typology['property_parking_text_en'] : '',
+								'fr' => isset($typology['property_parking_text_fr']) ? $typology['property_parking_text_fr'] : '',
+								'de' => isset($typology['property_parking_text_de']) ? $typology['property_parking_text_de'] : '',
+								'nl' => isset($typology['property_parking_text_nl']) ? $typology['property_parking_text_nl'] : '',
+								'it' => isset($typology['property_parking_text_it']) ? $typology['property_parking_text_it'] : '',
+								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
+						),
                     'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
                     'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
                     'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
@@ -680,7 +690,17 @@ abstract class AbstractConnector
             'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
             'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
             'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
-            'parking_text'=> isset($typology['property_parking_text']) ? $typology['property_parking_text'] : '',
+            'parking_text'=> 
+						array(
+								'ca' => isset($typology['property_parking_text_ca']) ? $typology['property_parking_text_ca'] : '',
+								'es' => isset($typology['property_parking_text_es']) ? $typology['property_parking_text_es'] : '',
+								'en' => isset($typology['property_parking_text_en']) ? $typology['property_parking_text_en'] : '',
+								'fr' => isset($typology['property_parking_text_fr']) ? $typology['property_parking_text_fr'] : '',
+								'de' => isset($typology['property_parking_text_de']) ? $typology['property_parking_text_de'] : '',
+								'nl' => isset($typology['property_parking_text_nl']) ? $typology['property_parking_text_nl'] : '',
+								'it' => isset($typology['property_parking_text_it']) ? $typology['property_parking_text_it'] : '',
+								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
+						),
             'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
             'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
             'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
