@@ -181,6 +181,10 @@ class Portal extends AbstractConnector
         
         $endPoint1 = $this->getEndPoint('availability_portals', array($typologyId));
         $availabilityPortalDays = $this->api(sprintf($endPoint1 . '?%s', http_build_query($params)));
+		$availabilityPortalDaysDayIndexed=array();
+        foreach($availabilityPortalDays as $availabilityPortalDay) {
+            $availabilityPortalDaysDayIndexed[$availabilityPortalDay['day']]=$availabilityPortalDay;
+        }
         
         $endPoint2 = $this->getEndPoint('typology_prices', array($typologyId));
     
@@ -192,9 +196,11 @@ class Portal extends AbstractConnector
 
         $return=array();
         $i=0;
-        foreach($availabilityPortalDays as $availabilityPortalDay) {
+		$date=$params['from'];
+		while($date<=$params['to']) {
             // if matches availability portal day with availability day, get data, else put available to 0 
-            $availabilityPropertyDay=isset($availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]) && $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']]['day']==$availabilityPortalDay['day'] ? $availabilityPropertyDaysDayIndexed[$availabilityPortalDay['day']] : array('day'=>$availabilityPortalDay['day'],'available'=>0);
+			$availabilityPortalDay=isset($availabilityPortalDaysDayIndexed[$date]) && $availabilityPortalDaysDayIndexed[$date]['day']==$date ? $availabilityPortalDaysDayIndexed[$date] : array('day'=>$date,'available'=>0,'bookings'=>0);
+            $availabilityPropertyDay=isset($availabilityPropertyDaysDayIndexed[$date]) && $availabilityPropertyDaysDayIndexed[$date]['day']==$date ? $availabilityPropertyDaysDayIndexed[$date] : array('day'=>$date,'available'=>0);
             $available=(int)$availabilityPortalDay['available']-(int)$availabilityPortalDay['bookings'];
             if($available>(int)$availabilityPropertyDay['available']) {
                 $available=(int)$availabilityPropertyDay['available'];
@@ -205,11 +211,12 @@ class Portal extends AbstractConnector
                 'checkin' => isset($availabilityPropertyDay['checkin']) && $availabilityPropertyDay['checkin'] ? $availabilityPropertyDay['checkin'] : 0,
                 'checkout' => isset($availabilityPropertyDay['checkout']) && $availabilityPropertyDay['checkout'] ? $availabilityPropertyDay['checkout'] : 0,
                 'release' => isset($availabilityPropertyDay['release']) && $availabilityPropertyDay['release'] ? $availabilityPropertyDay['release'] : 0,
-                'minimum_nights' => $availabilityPropertyDay['minimum_nights'],
-                'rentprice' => $availabilityPropertyDay['rentprice'],
+                'minimum_nights' => isset($availabilityPropertyDay['minimum_nights']) && $availabilityPropertyDay['minimum_nights'] ? $availabilityPropertyDay['minimum_nights'] : 0,
+                'rentprice' => isset($availabilityPropertyDay['rentprice']) ? $availabilityPropertyDay['rentprice'] : 0,
                 'available' => $available
             );
             $i++;
+			$date=date('Y-m-d',strtotime($date.' + 1 day'));
         }
         return $return;
     }
