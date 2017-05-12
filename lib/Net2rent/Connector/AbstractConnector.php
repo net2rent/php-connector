@@ -590,6 +590,11 @@ abstract class AbstractConnector
                 $equipments[$equipment_name] = $equipment_value;
             }
         }
+		
+		// disable basic_elements if not portal
+		if(!$this->portalId && isset($equipments['basic_elements'])) {
+			unset($equipments['basic_elements']);
+		}
 
         $images_array = $this->api("/typologies/" . $typology['id'] . "/images");
 
