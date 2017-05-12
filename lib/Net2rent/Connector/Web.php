@@ -75,6 +75,8 @@ class Web extends AbstractConnector
             $propertyId
         ));
 
+		$property_id=0;
+		
         $params = array();
         $params['from']=date('Y-m-d');
         $params['to']=date('Y-m-d',strtotime(date('Y-m-d').' + 1 year'));
@@ -84,8 +86,21 @@ class Web extends AbstractConnector
         if (isset($options['to'])) {
             $params['to'] = $this->checkDateFormat($options['to']);
         }
+		if (isset($options['property_id']) && $options['property_id']) {
+			$property_id=$options['property_id'];
+		}
                 
         $baseprices = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+		$a_propertystatus=array();
+		$propertyStatusDayIndexed=array();
+		if($property_id) {
+			$endPointPropertyStatus='/properties/'.$property_id.'/propertystatus';
+			$a_propertystatus=$this->api($endPointPropertyStatus);
+			foreach($a_propertystatus as $propertystatus) {
+				$propertyStatusDayIndexed[$propertystatus['day']]=$propertystatus;
+			}			
+		}
+			
         $availabilityPricesDays=array();
         
         // Get only necessary fields
@@ -98,7 +113,7 @@ class Web extends AbstractConnector
             $availabilityPriceDay['checkin']=$baseprice['checkin']; // 1 if possible checkin this day, 0 if not
             $availabilityPriceDay['checkout']=$baseprice['checkout']; // 1 if possible checkout this day, 0 if not
             $availabilityPriceDay['available']=(int)$baseprice['available']>0 ? 1 : 0; // available: 1=yes, 0=no
-            
+            $availabilityPriceDay['not_available']=!isset($propertyStatusDayIndexed[$baseprice['day']]) || $propertyStatusDayIndexed[$baseprice['day']]['status']=='not_available' ? 1 : 0; 
             $availabilityPricesDays[]=$availabilityPriceDay;
         }        
         
