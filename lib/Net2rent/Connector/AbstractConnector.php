@@ -137,6 +137,7 @@ abstract class AbstractConnector
      * @param  boolean  $options['satellite_tv'] 1/0 if 1, show properties with satellite_tv
      * @param  boolean  $options['barbecue'] 1/0 if 1, show properties with barbecue
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
+	 * @param  boolean $options['active'] 1/0, if 1 return active properties, if 0 return inactive properties. If null, return both active and inactive. Default value: 1
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -288,6 +289,12 @@ abstract class AbstractConnector
         if (isset($options['images_http_https'])) {
             $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
         }
+		if (isset($options['active']) && $options['active']!=1) {
+            $params['active'] = $options['active'];
+        }
+		else {
+			$params['active']=1;
+		}
      
         $params['lg'] = $this->lg;
 
@@ -307,21 +314,24 @@ abstract class AbstractConnector
                 );
             }
             else {
-                $equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");
-                $equipments = array();
-                $not_equipments = array(
-                    'id',
-                    'typology_id',
-                    'creation_date',
-                    'creation_usr',
-                    'edition_date',
-                    'edition_usr'
-                );
-                foreach ($equipment_array as $equipment_name => $equipment_value) {
-                    if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
-                        $equipments[$equipment_name] = $equipment_value;
-                    }
-                }
+				$equipments = array();
+                
+				if(!isset($typology['active']) || $typology['active']) {
+					$equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");
+					$not_equipments = array(
+						'id',
+						'typology_id',
+						'creation_date',
+						'creation_usr',
+						'edition_date',
+						'edition_usr'
+					);
+					foreach ($equipment_array as $equipment_name => $equipment_value) {
+						if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
+							$equipments[$equipment_name] = $equipment_value;
+						}
+					}
+				}
 
                 $properties[] = array(
                     'id' => $typology['id'],
@@ -331,6 +341,7 @@ abstract class AbstractConnector
                     'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
 					'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
                     'capacity' => $typology['capacity'],
+					'active'=> isset($typology['active']) ? $typology['active'] : null,
                     'building_type' => $typology['building_type'],
                     'commercialization_type' => $typology['commercialization_type'],
                     'rent_type' => isset($typology['rent_type']) ? $typology['rent_type'] : null,
