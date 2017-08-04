@@ -19,6 +19,8 @@ abstract class AbstractConnector
 
     protected $companyId=0;
     protected $portalId=0;
+	
+	protected $array_languages=array('ca','es','en','fr','de','nl','it','ru');
 
     public static $CURL_OPTS = array(
         CURLOPT_SSL_VERIFYHOST => false,
@@ -136,6 +138,7 @@ abstract class AbstractConnector
      * @param  boolean  $options['air_conditioning'] 1/0 if 1, show properties with air_conditioning
      * @param  boolean  $options['satellite_tv'] 1/0 if 1, show properties with satellite_tv
      * @param  boolean  $options['barbecue'] 1/0 if 1, show properties with barbecue
+	 * @param  string   $options['building_bame'] Filter by building name
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
 	 * @param  boolean $options['active'] 1/0, if 1 return active properties, if 0 return inactive properties. If null, return both active and inactive. Default value: 1
      * @return array  (items|total)
@@ -283,6 +286,9 @@ abstract class AbstractConnector
         }
         if (isset($options['barbecue'])) {
             $params['barbecue'] = $options['barbecue'];
+        }
+		if (isset($options['building_name'])) {
+            $params['building_name'] = $options['building_name'];
         }
         $params['images_http_https']='https';
         $images_http_https_values=array('http','https');

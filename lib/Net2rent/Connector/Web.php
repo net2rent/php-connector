@@ -41,7 +41,16 @@ class Web extends AbstractConnector
         'hear_about_us' => '/enums/14/values',
         'companies_minimum_nights' => '/companies/{{company}}/baseprices/minimum_nights',
         'companies_entry_days' => '/companies/{{company}}/baseprices/entry_days',
-        'companies_out_days' => '/companies/{{company}}/baseprices/out_days'
+        'companies_out_days' => '/companies/{{company}}/baseprices/out_days',
+		'packages' => '/companies/{{company}}/packages',
+		'package' => '/packages/%s',
+		'package_available_properties' => '/packages/%s/availabletypologies',
+		'ecommerce_categories' => '/companies/{{company}}/ecommercecategories',
+		'ecommerce_products' => '/companies/{{company}}/ecommerceproducts',
+		'ecommerce_product' => '/ecommerce/product/%s',
+		'ecommerce_product_days' => '/ecommerce/product/%s/days',
+		'ecommerce_sale' => '/ecommerce/sale/',
+		'ecommerce_sale_price' => '/ecommerce/sale/price'
     );
     
     public function getCompany()
@@ -513,7 +522,6 @@ class Web extends AbstractConnector
      * @param  string $options['public'] Filter by public. 1=public, 0=no public, null=all (default=1)
      * @param  string $options['lang'] Filter by comment language, valid values: ca,es,en,fr,de,nl,it,ru
      * @param  string $options['orderby'] Order comments field
-     * @param  string $options['orderby'] Order comments field
      * @param  string $options['orderdesc'] Order comments ASC (0) or DESC (1)
      * @return array  (total|items)
      */
@@ -556,6 +564,8 @@ class Web extends AbstractConnector
      * @param  bool $options['active'] Filter by active
      * @param  bool $options['unexpired'] Filter by unexpired
      * @param  integer $options['limit'] Limit results
+	 * @param  string $options['orderby'] Order comments field
+     * @param  string $options['orderdesc'] Order comments ASC (0) or DESC (1)
      * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
@@ -748,6 +758,7 @@ class Web extends AbstractConnector
      * @param  bool $options['active'] Filter by active
      * @param  bool $options['unexpired'] Filter by unexpired
      * @param  string $options['orderby'] Order discounts
+     * @param  string $options['orderdesc'] Order discounts ASC (0) or DESC (1)
      * @return array  (total|items)
      */
     public function getDiscounts(array $options = array())
@@ -908,5 +919,547 @@ class Web extends AbstractConnector
         $endPoint = $this->getEndPoint('companies_out_days');
         $outDays=$this->api($endPoint);
         return isset($outDays['out_days']) ? $outDays['out_days'] : array();
+    }
+	
+	/**
+     * Gets packages
+     *
+	 * @param  string $options['offset'] 
+     * @param  string $options['limit']
+     * @param  string $options['orderby'] Order packages field
+     * @param  string $options['orderdesc'] Order packages ASC (0) or DESC (1)
+     * @param  bool $options['active'] Filter by active
+	 * @param  integer  $options['max_w'] Max width of image
+     * @param  integer  $options['max_h'] Max height of image
+     * @param  integer  $options['quality'] JPEG quality percent of image
+     * @return array  (total|items)
+     */
+    public function getPackages(array $options = array())
+    {
+        $endPoint = $this->getEndPoint('packages');
+
+        $params = array();
+		$params['offset']=0;
+        if (isset($options['offset'])) {
+            $params['offset'] = $options['offset'];
+        }
+        $params['limit']=-1;
+        if (isset($options['limit'])) {
+            $params['limit'] = $options['limit'];
+        }
+        $params['orderby']='discount.end_day';
+        if(isset($options['orderby'])) {
+            $params['orderby'] = $options['orderby'];
+        }
+        $params['orderdesc']=0;
+        if(isset($options['orderdesc'])) {
+            $params['orderdesc'] = $options['orderdesc'];
+        }
+		$params['active']=1;
+        if(isset($options['active'])) {
+            $params['active'] = $options['active'];
+        }   
+		$params['max_w']=4000;
+        if (isset($options['max_w'])) {
+            $params['max_w'] = $options['max_w'];
+        }
+        $params['max_h']=3000;
+        if (isset($options['max_h'])) {
+            $params['max_h'] = $options['max_h'];
+        }
+        $params['quality']=80;
+        if (isset($options['quality'])) {
+            $params['quality'] = $options['quality'];
+        }
+        $packages_api = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+		$packagesTotal = $this->api(sprintf($endPoint . '/size?%s', http_build_query($params)));
+		
+		$packages=array();
+		foreach($packages_api as $package) {
+			$package['image']=array();
+			foreach($this->array_languages as $language) {
+				$package['image'][$language]=sprintf('%s/packages/%s/image?lg=%s&max_w=%s&max_h=%s&quality=%s',
+                            $this->apiBaseUrl,
+                            $package['id'],
+                            $language,
+                            $params['max_w'],
+                            $params['max_h'],
+                            $params['quality']   
+				);
+			}
+			$package['name'] = array(
+				'es' => strip_tags($package['name_es']) ,
+				'ca' => strip_tags($package['name_ca']) ,
+				'en' => strip_tags($package['name_en']) ,
+				'fr' => strip_tags($package['name_fr']) ,
+				'de' => strip_tags($package['name_de']) ,
+				'nl' => strip_tags($package['name_nl']) ,
+				'it' => strip_tags($package['name_it']) ,
+				'ru' => strip_tags($package['name_ru'])
+			);
+
+			$package['subtitle'] = array(
+				'es' => strip_tags($package['subtitle_es']) ,
+				'ca' => strip_tags($package['subtitle_ca']) ,
+				'en' => strip_tags($package['subtitle_en']) ,
+				'fr' => strip_tags($package['subtitle_fr']) ,
+				'de' => strip_tags($package['subtitle_de']) ,
+				'nl' => strip_tags($package['subtitle_nl']) ,
+				'it' => strip_tags($package['subtitle_it']) ,
+				'ru' => strip_tags($package['subtitle_ru'])
+			);
+
+			$package['text'] = array(
+				'es' => strip_tags($package['text_es']) ,
+				'ca' => strip_tags($package['text_ca']) ,
+				'en' => strip_tags($package['text_en']) ,
+				'fr' => strip_tags($package['text_fr']) ,
+				'de' => strip_tags($package['text_de']) ,
+				'nl' => strip_tags($package['text_nl']) ,
+				'it' => strip_tags($package['text_it']) ,
+				'ru' => strip_tags($package['text_ru'])
+			);
+
+			$package['price_from'] = array(
+				'es' => strip_tags($package['price_from_es']) ,
+				'ca' => strip_tags($package['price_from_ca']) ,
+				'en' => strip_tags($package['price_from_en']) ,
+				'fr' => strip_tags($package['price_from_fr']) ,
+				'de' => strip_tags($package['price_from_de']) ,
+				'nl' => strip_tags($package['price_from_nl']) ,
+				'it' => strip_tags($package['price_from_it']) ,
+				'ru' => strip_tags($package['price_from_ru'])
+			);
+			$packages[]=$package;			
+		}
+        
+        return array(
+            'total' => $packagesTotal,
+            'items' => $packages
+        );
+    }
+	
+	/**
+     * Gets package
+     * @param  integer $packageId ID of the package
+	 * @param  integer  $options['max_w'] Max width of image
+     * @param  integer  $options['max_h'] Max height of image
+     * @param  integer  $options['quality'] JPEG quality percent of image
+     * @return array 
+     */
+    public function getPackage($packageId,array $options = array())
+    {
+        $endPoint = $this->getEndPoint('package');
+
+        $package= $this->api(sprintf($endPoint , $packageId));
+		
+		$params=array();
+		$params['max_w']=4000;
+        if (isset($options['max_w'])) {
+            $params['max_w'] = $options['max_w'];
+        }
+        $params['max_h']=3000;
+        if (isset($options['max_h'])) {
+            $params['max_h'] = $options['max_h'];
+        }
+        $params['quality']=80;
+        if (isset($options['quality'])) {
+            $params['quality'] = $options['quality'];
+        }
+		
+		$agency=$this->getAgency($package['agency_id']);
+		
+		$package['image']=array();
+		foreach($this->array_languages as $language) {
+			$package['image'][$language]=sprintf('%s/packages/%s/image?lg=%s&max_w=%s&max_h=%s&quality=%s',
+						$this->apiBaseUrl,
+						$package['id'],
+						$language,
+						$params['max_w'],
+						$params['max_h'],
+						$params['quality']   
+			);
+		}
+		$package['name'] = array(
+			'es' => strip_tags($package['name_es']) ,
+			'ca' => strip_tags($package['name_ca']) ,
+			'en' => strip_tags($package['name_en']) ,
+			'fr' => strip_tags($package['name_fr']) ,
+			'de' => strip_tags($package['name_de']) ,
+			'nl' => strip_tags($package['name_nl']) ,
+			'it' => strip_tags($package['name_it']) ,
+			'ru' => strip_tags($package['name_ru'])
+		);
+
+		$package['subtitle'] = array(
+			'es' => strip_tags($package['subtitle_es']) ,
+			'ca' => strip_tags($package['subtitle_ca']) ,
+			'en' => strip_tags($package['subtitle_en']) ,
+			'fr' => strip_tags($package['subtitle_fr']) ,
+			'de' => strip_tags($package['subtitle_de']) ,
+			'nl' => strip_tags($package['subtitle_nl']) ,
+			'it' => strip_tags($package['subtitle_it']) ,
+			'ru' => strip_tags($package['subtitle_ru'])
+		);
+
+		$package['text'] = array(
+			'es' => strip_tags($package['text_es']) ,
+			'ca' => strip_tags($package['text_ca']) ,
+			'en' => strip_tags($package['text_en']) ,
+			'fr' => strip_tags($package['text_fr']) ,
+			'de' => strip_tags($package['text_de']) ,
+			'nl' => strip_tags($package['text_nl']) ,
+			'it' => strip_tags($package['text_it']) ,
+			'ru' => strip_tags($package['text_ru'])
+		);
+
+		$package['price_from'] = array(
+			'es' => strip_tags($package['price_from_es']) ,
+			'ca' => strip_tags($package['price_from_ca']) ,
+			'en' => strip_tags($package['price_from_en']) ,
+			'fr' => strip_tags($package['price_from_fr']) ,
+			'de' => strip_tags($package['price_from_de']) ,
+			'nl' => strip_tags($package['price_from_nl']) ,
+			'it' => strip_tags($package['price_from_it']) ,
+			'ru' => strip_tags($package['price_from_ru'])
+		);
+		
+		$package['days']=$this->api(sprintf('%s/packages/%s/days',
+										$this->apiBaseUrl,
+										$package['id']
+									)
+						);
+		$package['time_in']=$agency['time_in'];
+        
+        return $package;
+    }
+	
+	/**
+     * Gets package
+     * @param  integer $packageId ID of the package
+	 * @param  string  $options['date_in'] Date of checkin
+     * @return array(items|total) 
+     */
+    public function getPackageAvailableProperties($packageId,array $options = array())
+    {
+        $endPoint = $this->getEndPoint('package_available_properties');
+		
+		$params=array();
+
+        $params['date_in']='';
+        if (isset($options['date_in'])) {
+            $params['date_in'] = $options['date_in'];
+        }
+		
+		$properties = $this->api(sprintf($endPoint . '?%s', $packageId,http_build_query($params)));
+        
+		return array(
+            'total' => count($properties),
+            'items' => $properties
+        );
+    }
+	
+	/**
+     * Gets ecommerce categories
+     *
+	 * @param  string $options['offset'] 
+     * @param  string $options['limit']
+     * @param  string $options['orderby'] Order categories field
+     * @param  string $options['orderdesc'] Order categories ASC (0) or DESC (1)
+     * @return array  (total|items)
+     */
+    public function getEcommerceCategories(array $options = array())
+    {
+        $endPoint = $this->getEndPoint('ecommerce_categories');
+
+        $params = array();
+		$params['offset']=0;
+        if (isset($options['offset'])) {
+            $params['offset'] = $options['offset'];
+        }
+        $params['limit']=-1;
+        if (isset($options['limit'])) {
+            $params['limit'] = $options['limit'];
+        }
+        $params['orderby']='discount.end_day';
+        if(isset($options['orderby'])) {
+            $params['orderby'] = $options['orderby'];
+        }
+        $params['orderdesc']=0;
+        if(isset($options['orderdesc'])) {
+            $params['orderdesc'] = $options['orderdesc'];
+        }
+        $categories_api = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+		$categoriesTotal = $this->api(sprintf($endPoint . '/size?%s', http_build_query($params)));
+		
+		$categories=array();
+		foreach($categories_api as $category) {
+			$category['name'] = array(
+				'es' => strip_tags($category['name_es']) ,
+				'ca' => strip_tags($category['name_ca']) ,
+				'en' => strip_tags($category['name_en']) ,
+				'fr' => strip_tags($category['name_fr']) ,
+				'de' => strip_tags($category['name_de']) ,
+				'nl' => strip_tags($category['name_nl']) ,
+				'it' => strip_tags($category['name_it']) ,
+				'ru' => strip_tags($category['name_ru'])
+			);
+
+			$category['description'] = array(
+				'es' => strip_tags($category['description_es']) ,
+				'ca' => strip_tags($category['description_ca']) ,
+				'en' => strip_tags($category['description_en']) ,
+				'fr' => strip_tags($category['description_fr']) ,
+				'de' => strip_tags($category['description_de']) ,
+				'nl' => strip_tags($category['description_nl']) ,
+				'it' => strip_tags($category['description_it']) ,
+				'ru' => strip_tags($category['description_ru'])
+			);
+			$categories[]=$category;			
+		}
+        
+        return array(
+            'total' => $categoriesTotal,
+            'items' => $categories
+        );
+    }
+	
+	/**
+     * Gets ecommerce products
+     *
+	 * @param  string $options['offset'] 
+     * @param  string $options['limit']
+     * @param  string $options['orderby'] Order products field
+     * @param  string $options['orderdesc'] Order products ASC (0) or DESC (1)
+	 * @param  integer  $options['max_w'] Max width of image
+     * @param  integer  $options['max_h'] Max height of image
+     * @param  integer  $options['quality'] JPEG quality percent of image
+     * @return array  (total|items)
+     */
+    public function getEcommerceProducts(array $options = array())
+    {
+        $endPoint = $this->getEndPoint('ecommerce_products');
+
+        $params = array();
+		$params['offset']=0;
+        if (isset($options['offset'])) {
+            $params['offset'] = $options['offset'];
+        }
+        $params['limit']=-1;
+        if (isset($options['limit'])) {
+            $params['limit'] = $options['limit'];
+        }
+        $params['orderby']='discount.end_day';
+        if(isset($options['orderby'])) {
+            $params['orderby'] = $options['orderby'];
+        }
+        $params['orderdesc']=0;
+        if(isset($options['orderdesc'])) {
+            $params['orderdesc'] = $options['orderdesc'];
+        }
+		$params['max_w']=4000;
+        if (isset($options['max_w'])) {
+            $params['max_w'] = $options['max_w'];
+        }
+        $params['max_h']=3000;
+        if (isset($options['max_h'])) {
+            $params['max_h'] = $options['max_h'];
+        }
+        $params['quality']=80;
+        if (isset($options['quality'])) {
+            $params['quality'] = $options['quality'];
+        }
+		
+        $products_api = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+		$productsTotal = $this->api(sprintf($endPoint . '/size?%s', http_build_query($params)));
+		
+		$products=array();
+		foreach($products_api as $product) {
+			$product['image']=sprintf('%s/ecommerce/product/%s/image?max_w=%s&max_h=%s&quality=%s',
+						$this->apiBaseUrl,
+						$product['id'],
+						$params['max_w'],
+						$params['max_h'],
+						$params['quality']   
+			);
+			
+			$product['name'] = array(
+				'es' => strip_tags($product['name_es']) ,
+				'ca' => strip_tags($product['name_ca']) ,
+				'en' => strip_tags($product['name_en']) ,
+				'fr' => strip_tags($product['name_fr']) ,
+				'de' => strip_tags($product['name_de']) ,
+				'nl' => strip_tags($product['name_nl']) ,
+				'it' => strip_tags($product['name_it']) ,
+				'ru' => strip_tags($product['name_ru'])
+			);
+
+			$product['description'] = array(
+				'es' => strip_tags($product['description_es']) ,
+				'ca' => strip_tags($product['description_ca']) ,
+				'en' => strip_tags($product['description_en']) ,
+				'fr' => strip_tags($product['description_fr']) ,
+				'de' => strip_tags($product['description_de']) ,
+				'nl' => strip_tags($product['description_nl']) ,
+				'it' => strip_tags($product['description_it']) ,
+				'ru' => strip_tags($product['description_ru'])
+			);
+			
+			$product['category_name'] = array(
+				'es' => strip_tags($product['category_name_es']) ,
+				'ca' => strip_tags($product['category_name_ca']) ,
+				'en' => strip_tags($product['category_name_en']) ,
+				'fr' => strip_tags($product['category_name_fr']) ,
+				'de' => strip_tags($product['category_name_de']) ,
+				'nl' => strip_tags($product['category_name_nl']) ,
+				'it' => strip_tags($product['category_name_it']) ,
+				'ru' => strip_tags($product['category_name_ru'])
+			);
+			$products[]=$product;			
+		}
+        
+        return array(
+            'total' => $productsTotal,
+            'items' => $products
+        );
+    }
+	
+	/**
+     * Gets ecommerce product
+     *
+	 * @param  integer  $productId ecommerce product id
+	 * @param  integer  $options['max_w'] Max width of image
+     * @param  integer  $options['max_h'] Max height of image
+     * @param  integer  $options['quality'] JPEG quality percent of image
+     * @return array 
+     */
+    public function getEcommerceProduct($productId,array $options = array())
+    {
+        $endPoint = $this->getEndPoint('ecommerce_product');
+
+        $params = array();
+		$params['max_w']=4000;
+        if (isset($options['max_w'])) {
+            $params['max_w'] = $options['max_w'];
+        }
+        $params['max_h']=3000;
+        if (isset($options['max_h'])) {
+            $params['max_h'] = $options['max_h'];
+        }
+        $params['quality']=80;
+        if (isset($options['quality'])) {
+            $params['quality'] = $options['quality'];
+        }
+		
+        $product= $this->api(sprintf($endPoint , $productId));
+		
+		$product['image']=sprintf('%s/ecommerce/product/%s/image?max_w=%s&max_h=%s&quality=%s',
+					$this->apiBaseUrl,
+					$product['id'],
+					$params['max_w'],
+					$params['max_h'],
+					$params['quality']   
+		);
+
+		$product['name'] = array(
+			'es' => strip_tags($product['name_es']) ,
+			'ca' => strip_tags($product['name_ca']) ,
+			'en' => strip_tags($product['name_en']) ,
+			'fr' => strip_tags($product['name_fr']) ,
+			'de' => strip_tags($product['name_de']) ,
+			'nl' => strip_tags($product['name_nl']) ,
+			'it' => strip_tags($product['name_it']) ,
+			'ru' => strip_tags($product['name_ru'])
+		);
+
+		$product['description'] = array(
+			'es' => strip_tags($product['description_es']) ,
+			'ca' => strip_tags($product['description_ca']) ,
+			'en' => strip_tags($product['description_en']) ,
+			'fr' => strip_tags($product['description_fr']) ,
+			'de' => strip_tags($product['description_de']) ,
+			'nl' => strip_tags($product['description_nl']) ,
+			'it' => strip_tags($product['description_it']) ,
+			'ru' => strip_tags($product['description_ru'])
+		);
+		
+		$product['category_name'] = array(
+			'es' => strip_tags($product['category_name_es']) ,
+			'ca' => strip_tags($product['category_name_ca']) ,
+			'en' => strip_tags($product['category_name_en']) ,
+			'fr' => strip_tags($product['category_name_fr']) ,
+			'de' => strip_tags($product['category_name_de']) ,
+			'nl' => strip_tags($product['category_name_nl']) ,
+			'it' => strip_tags($product['category_name_it']) ,
+			'ru' => strip_tags($product['category_name_ru'])
+		);
+        
+        return $product;
+    }
+	
+	/**
+     * Gets ecommerce product calendar days available
+     *
+	 * @param  integer  $productId ecommerce product id
+     * @return array 
+     */
+    public function getEcommerceProductDays($productId)
+    {
+        $endPoint = $this->getEndPoint('ecommerce_product_days');
+		
+        $a_days= $this->api(sprintf($endPoint , $productId));
+        
+        return $a_days;
+    }
+	
+	/**
+     * Gets ecommerce categories
+     *
+	 * @param  integer  $options['ecommerceproduct_id'] Max width of image
+     * @param  string  $options['date'] date
+	 * @param  string  $options['date_in'] date in
+	 * @param  string  $options['date_out'] date out
+     * @param  integer  $options['quantity'] quantity
+     * @return array 
+     */
+    public function getEcommerceSalePrice(array $options = array())
+    {
+        $endPoint = $this->getEndPoint('ecommerce_sale_price');
+
+        $params = array();
+		$params['ecommerceproduct_id']=0;
+        if (isset($options['ecommerceproduct_id'])) {
+            $params['ecommerceproduct_id'] = $options['ecommerceproduct_id'];
+        }
+        $params['date']='';
+        if (isset($options['date'])) {
+            $params['date'] = $options['date'];
+        }
+		$params['date_in']='';
+        if (isset($options['date_in'])) {
+            $params['date_in'] = $options['date_in'];
+        }
+		$params['date_out']='';
+        if (isset($options['date_out'])) {
+            $params['date_out'] = $options['date_out'];
+        }
+        $params['quantity']=0;
+        if (isset($options['quantity'])) {
+            $params['quantity'] = $options['quantity'];
+        }
+
+		$sale_price = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+        
+        return $sale_price;
+    }
+	
+	/**
+     * Inserts an ecommerce sale. To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=&section=ecommerce&call=POST+%2Fecommerce%2Fsale%2F
+     */
+    public function insertEcommerceSale(array $ecommerceSaleOptions)
+    {
+        $endPoint = $this->getEndPoint('ecommerce_sale');
+        return $this->api($endPoint, 'POST', $ecommerceSaleOptions);
     }
 }
