@@ -10,7 +10,7 @@ if (!function_exists('json_decode')) {
 
 abstract class AbstractConnector
 {
-    const VERSION = '0.2.1';
+    const VERSION = '1.0';
 
     protected $apiBaseUrl;
     protected $apiUser;
@@ -28,7 +28,7 @@ abstract class AbstractConnector
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 240,
-        CURLOPT_USERAGENT => 'net2rent-connector-php-0.2.1',
+        CURLOPT_USERAGENT => 'net2rent-connector-php-1.0',
     );
 
     /**
@@ -111,7 +111,8 @@ abstract class AbstractConnector
      * @param  integer $options['company_id'] Filter by company_id
      * @param  string $options['ref_string'] Filter by property ref string
      * @param  string $options['commercialization_type'] Valid values: [rental, sale, rental_sale, property_management, rental_property_management], can be multiple separed by , (comma)
-     * @param  string $options['rental_type'] Valid values: [turistic, season, residential, any], can be multiple separed by , (comma)
+     * @param  string $options['rent_type'] Valid values: [turistic, season, residential, any], can be multiple separed by , (comma)
+	 * @param  string $options['category'] Valid values: [turistic, exclusive, premium], can be multiple separed by , (comma)
      * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
@@ -189,6 +190,9 @@ abstract class AbstractConnector
         }
         if (isset($options['rent_type'])) {
             $params['rent_type'] = $options['rent_type'];
+        }
+		if (isset($options['category'])) {
+            $params['category'] = $options['category'];
         }
         if (isset($options['building_type'])) {
             $params['building_type'] = $options['building_type'];
