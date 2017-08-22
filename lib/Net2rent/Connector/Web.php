@@ -925,10 +925,11 @@ class Web extends AbstractConnector
 	/**
      * Gets packages
      *
-	 * @param  string $options['offset'] 
-     * @param  string $options['limit']
+	 * @param  integer $options['offset'] 
+     * @param  integer $options['limit']
      * @param  string $options['orderby'] Order packages field
-     * @param  string $options['orderdesc'] Order packages ASC (0) or DESC (1)
+     * @param  integer $options['orderdesc'] Order packages ASC (0) or DESC (1)
+	 * @param  integer $options['people'] Filter by people number 
      * @param  bool $options['active'] Filter by active
 	 * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
@@ -955,6 +956,10 @@ class Web extends AbstractConnector
         $params['orderdesc']=0;
         if(isset($options['orderdesc'])) {
             $params['orderdesc'] = $options['orderdesc'];
+        }
+		$params['people']=null;
+        if(isset($options['people'])) {
+            $params['people'] = $options['people'];
         }
 		$params['active']=1;
         if(isset($options['active'])) {
