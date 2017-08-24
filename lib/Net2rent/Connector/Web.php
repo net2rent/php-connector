@@ -1419,9 +1419,10 @@ class Web extends AbstractConnector
     }
 	
 	/**
-     * Gets ecommerce categories
+     * Gets ecommerce sale price
      *
-	 * @param  integer  $options['ecommerceproduct_id'] Max width of image
+	 * @param  integer  $options['ecommerceproduct_id'] Ecommerce product ID
+	 * @param  integer  $options['ecommerceattributeterm_id'] Ecommerce attribute term ID
      * @param  string  $options['date'] date
 	 * @param  string  $options['date_in'] date in
 	 * @param  string  $options['date_out'] date out
@@ -1436,6 +1437,10 @@ class Web extends AbstractConnector
 		$params['ecommerceproduct_id']=0;
         if (isset($options['ecommerceproduct_id'])) {
             $params['ecommerceproduct_id'] = $options['ecommerceproduct_id'];
+        }
+		$params['ecommerceattributeterm_id']=0;
+        if (isset($options['ecommerceattributeterm_id'])) {
+            $params['ecommerceattributeterm_id'] = $options['ecommerceattributeterm_id'];
         }
         $params['date']='';
         if (isset($options['date'])) {
