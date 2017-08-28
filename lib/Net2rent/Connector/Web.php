@@ -1237,6 +1237,8 @@ class Web extends AbstractConnector
      * @param  string $options['limit']
      * @param  string $options['orderby'] Order products field
      * @param  string $options['orderdesc'] Order products ASC (0) or DESC (1)
+	 * @param  bool $options['active'] Filter by active
+	 * @param  bool $options['public'] Filter by public
 	 * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
@@ -1263,6 +1265,14 @@ class Web extends AbstractConnector
         if(isset($options['orderdesc'])) {
             $params['orderdesc'] = $options['orderdesc'];
         }
+		$params['active']=1;
+        if(isset($options['active'])) {
+            $params['active'] = $options['active'];
+        }   
+		$params['public']=1;
+        if(isset($options['public'])) {
+            $params['public'] = $options['public'];
+        }   
 		$params['max_w']=4000;
         if (isset($options['max_w'])) {
             $params['max_w'] = $options['max_w'];
