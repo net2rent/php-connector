@@ -1239,6 +1239,7 @@ class Web extends AbstractConnector
      * @param  string $options['orderdesc'] Order products ASC (0) or DESC (1)
 	 * @param  bool $options['active'] Filter by active
 	 * @param  bool $options['public'] Filter by public
+	 * @param  bool $options['offer_as_package'] Filter by offer_as_package
 	 * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
@@ -1272,6 +1273,10 @@ class Web extends AbstractConnector
 		$params['public']=1;
         if(isset($options['public'])) {
             $params['public'] = $options['public'];
+        }  
+		$params['offer_as_package']='';
+        if(isset($options['offer_as_package'])) {
+            $params['offer_as_package'] = $options['offer_as_package'];
         }   
 		$params['max_w']=4000;
         if (isset($options['max_w'])) {
