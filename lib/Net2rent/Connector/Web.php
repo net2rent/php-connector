@@ -458,6 +458,16 @@ class Web extends AbstractConnector
         return $this->api($endPoint, 'POST', $bookingOptions);
     }
     
+	/**
+     * Modifies a booking. To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=admin%40company.com&pas=admin_company&section=bookings&call=PUT+%2Fbookings%2F%3Abooking_id
+     */
+    public function modifyBooking($bookingId,array $bookingOptions)
+    {
+        $endPoint = $this->getEndPoint('booking');
+        return $this->api(sprintf($endPoint.'/%s',$bookingId), 'PUT', $bookingOptions);
+    }
+	
     /**
      * Inserts a booking person. To get fields, consult online documentation at  
      * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=admin%40company.com&pas=admin_company&section=bookings&call=POST+%2Fbookings%2F%3Abooking_id%2Fpeople%2F
