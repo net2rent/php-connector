@@ -51,7 +51,8 @@ class Web extends AbstractConnector
 		'ecommerce_product_days' => '/ecommerce/product/%s/days',
 		'ecommerce_sale' => '/ecommerce/sale/',
 		'ecommerce_sale_price' => '/ecommerce/sale/price',
-		'booking_ecommercesales' => '/bookings/%s/ecommercesales'
+		'booking_ecommercesales' => '/bookings/%s/ecommercesales',
+		'ecommerce_sale_payments' => '/ecommerce/sale/%s/payments/',
     );
     
     public function getCompany()
@@ -1503,4 +1504,16 @@ class Web extends AbstractConnector
 		$endPoint = $this->getEndPoint('booking_ecommercesales');
         return $this->api(sprintf($endPoint,$bookingId), 'GET');	
 	}
+	
+	public function getEcommerceSale($ecommerceSaleId)
+    {
+        $endPoint = $this->getEndPoint('ecommerce_sale');
+        return $this->api(sprintf($endPoint.'%s',$ecommerceSaleId), 'GET');
+    }
+	
+	public function insertEcommerceSalePayment($ecommerceSaleId,array $ecommerceSalePaymentOptions)
+    {
+        $endPoint = $this->getEndPoint('ecommerce_sale_payments');
+        return $this->api(sprintf($endPoint,$ecommerceSaleId), 'POST',$ecommerceSalePaymentOptions);
+    }
 }
