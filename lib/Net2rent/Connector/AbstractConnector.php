@@ -413,6 +413,7 @@ abstract class AbstractConnector
 								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
 						),
                     'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
+					'category'=> isset($typology['category']) ? $typology['category'] : null,
                     'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
                     'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
                     'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
@@ -742,6 +743,7 @@ abstract class AbstractConnector
 								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
 						),
             'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
+			'category'=> isset($typology['category']) ? $typology['category'] : null,
             'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
             'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
             'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
