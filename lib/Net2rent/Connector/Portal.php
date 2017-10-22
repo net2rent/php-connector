@@ -257,10 +257,22 @@ class Portal extends AbstractConnector
         return $blockedPeriods;
     }
 
-    public function getTypologyDaysPrices($typologyId)
+    public function getTypologyDaysPrices($typologyId,array $options)
     {
-        $endPoint = $this->getEndPoint('typology_prices', array($typologyId));
-        return $this->api($endPoint);
+		$params = array();
+        $params['from']=date('Y-m-d');
+        $params['to']=date('Y-m-d',strtotime($params['from'].' + 1 year'));
+        if(isset($options['from'])) {
+            $params['from'] = $options['from'] ? $options['from']  : date('Y-m-d');
+        }
+        if(isset($options['to'])) {
+            $params['to'] = $options['to'] ? $options['to']  : date('Y-m-d',strtotime($params['from'].' + 1 year'));
+        }
+		
+		$endPoint = $this->getEndPoint('typology_prices', array($typologyId));
+        $typologyDaysPrices = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+		
+        return $typologyDaysPrices;
     }
 
     public function getTypologyDaysPricesPeriods($typologyId)
