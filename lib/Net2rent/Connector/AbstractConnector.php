@@ -462,6 +462,8 @@ abstract class AbstractConnector
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
                     'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
+					'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
+                    'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
                     'restrictions' => isset($typology['restrictions']) ? $typology['restrictions'] : 0,
                     'online_reservation' => isset($typology['property_online_reservation']) ? $typology['property_online_reservation'] : null,
 					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
@@ -721,6 +723,8 @@ abstract class AbstractConnector
             'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
             'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
             'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
+			'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
+                    'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
             'vat' => isset($typology['vat']) ? $typology['vat'] : 0,
 
             'online_reservation' => (isset($typology['default_online_reservation'])) ? $typology['default_online_reservation'] : null,
