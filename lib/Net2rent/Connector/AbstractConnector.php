@@ -324,7 +324,9 @@ abstract class AbstractConnector
                     'ref' => $typology['property_ref_property_string'],
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
-                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : ""
+                    'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+					'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : "",
+					'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : ""
                 );
             }
             else {
@@ -838,7 +840,7 @@ abstract class AbstractConnector
      *
      * @param  string  $propertyId
      * @param  date  $options['mandatory'] Filter by mandatory (1=yes, 0=no)
-     * @param  lg    $options['mandatory'] Language of the accessory name (values: ca,es,en,fr,de,nl,ru,it)
+     * @param  lg    $options['lg'] Language of the accessory name (values: ca,es,en,fr,de,nl,ru,it)
      * @param  date  $options['from'] First date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
      * @param  date  $options['to'] Last date to get availability and prices. Format YYYY-MM-DD. Optional, if not set gets one year
      * @return array  (items)
@@ -902,6 +904,63 @@ abstract class AbstractConnector
         return $accessoriesReturn;
     }
     
+	public function getPropertyVolumeDiscounts($propertyId) {
+		$params = array();
+		
+		$endPoint = $this->getEndPoint('property_volumediscounts');
+        return $this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
+	}
+	
+	/**
+     * Gets season periods
+     *
+     * @param  string  $seasonId
+     * @param  date  $options['from'] First date to get season dates. Format YYYY-MM-DD. Optional, if not set gets two years
+     * @param  date  $options['to'] Last date to get season dates. Format YYYY-MM-DD. Optional, if not set gets two years
+     * @return array  (items)
+     */
+    public function getSeasonPeriods($seasonId, array $options = array())
+    {
+        $endPoint = $this->getEndPoint('season_days');
+
+        $params['from']=isset($options['from']) && $options['from'] ? $options['from'] : date('Y-m-d');   
+        $params['to']=isset($options['to']) && $options['to'] ? $options['to'] : date('Y-m-d',strtotime(date('Y-m-d').' + 2 YEAR'));   
+
+		$seasonDays=$this->api(sprintf($endPoint . '?%s',$seasonId,http_build_query($params)));
+		
+		$periods=array();
+		$period=null;
+		$lastSeasonDay=null;
+		foreach($seasonDays as $seasonDay) {			
+			if($lastSeasonDay==null) {
+				$period['from']=$seasonDay;
+				$lastSeasonDay=$seasonDay;
+			}
+			else {
+				$day_1=date('Y-m-d',strtotime($lastSeasonDay.' +1 DAY'));
+				if($day_1==$seasonDay) {
+					$lastSeasonDay=$seasonDay;
+					continue;
+				}
+				else {
+					$period['to']=$lastSeasonDay;
+					$periods[]=$period;
+					$lastSeasonDay=$seasonDay;
+					$period['from']=$seasonDay;
+					$period['to']=null;
+				}
+			}
+		}
+		
+		// close last period
+		if($period['to']==null && isset($seasonDay)) {
+			$period['to']=$seasonDay;
+			$periods[]=$period;
+		}
+        
+        return $periods;
+    }
+	
     public function getAvailability($property_id, array $options = array())
     {
     }

@@ -7,7 +7,8 @@ class Superadmin extends AbstractConnector
     protected $_endPoints = array(
         'companies' => '/companies/',
         'bookings' => '/companies/%s/bookings',
-        'booking' => '/bookings/'
+        'booking' => '/bookings/',
+		'users' => '/users/'
     );
     
     /**
@@ -91,6 +92,16 @@ class Superadmin extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('booking');
         return $this->api(sprintf($endPoint.'%s',$bookingId), 'PUT', $bookingOptions);
+    }
+	
+	/**
+     * Get user by usr
+     * @return array
+     */
+    public function getUser($usr)
+    {
+        $endPoint = $this->getEndPoint('users');
+        return $this->api(sprintf($endPoint . '%s',$usr));
     }
  
 }

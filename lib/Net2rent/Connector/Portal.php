@@ -29,6 +29,8 @@ class Portal extends AbstractConnector
 		'bookingrequest' => '/bookings/bookingrequests',
 		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
 		'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
+		'property_volumediscounts' => '/typologies/%s/volumediscounts',
+		'season_days' => '/seasons/%s/days'
     );
 
     public function getCompanies()
@@ -257,7 +259,7 @@ class Portal extends AbstractConnector
         return $blockedPeriods;
     }
 
-    public function getTypologyDaysPrices($typologyId,array $options)
+    public function getTypologyDaysPrices($typologyId,array $options=array())
     {
 		$params = array();
         $params['from']=date('Y-m-d');
