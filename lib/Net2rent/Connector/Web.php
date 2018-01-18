@@ -226,17 +226,20 @@ class Web extends AbstractConnector
                 $j=0;
                 $prev='';
                 foreach($seasonDays as $day) {
+					$minimum_nights=isset($basePricesDaysIndexed[$day['day']]) ? $basePricesDaysIndexed[$day['day']]['minimum_nights'] : null; 
+					
                     if(
                        (!$params['only_contract'] || 
                        ($params['only_contract'] && isset($contractDaysIndexed[$day['day']]) && (int)$contractDaysIndexed[$day['day']]['contract']))
                         && !isset($overwrittenDaysIndexed[$day['day']])
                     ) {
-                        if($day['season_id']==$seasonId) {
+                        if($day['season_id']==$seasonId && $minimum_nights==$seasonsRates[$i]['dates'][$j]['minimum_nights']) {
                             $next=date('Y-m-d', strtotime('+1 day', strtotime($prev)));
                             if($day['day']!=$next) {
                                 $seasonsRates[$i]['dates'][$j]['end_day']=$prev;
                                 $j++;
                                 $seasonsRates[$i]['dates'][$j]['start_day']=$day['day'];
+								$seasonsRates[$i]['dates'][$j]['minimum_nights']=$minimum_nights;
                             }
                             $prev=$day['day'];
                         } else {
@@ -261,13 +264,12 @@ class Web extends AbstractConnector
                                 $property['id']
                             );
                             $info=$this->api(sprintf($endPointSeason . '?%s', http_build_query($params_season)));
-                            $minimum_nights=isset($basePricesDaysIndexed[$day['day']]) ? $basePricesDaysIndexed[$day['day']]['minimum_nights'] : null; 
                             
                             // create season only if was not created in early dates
                             if($j==0) {
                                 $seasonsRates[$i]=array('season_id'=>$seasonId, 'name'=>$info['season_name'], 'rentprice'=>$info['rentprice'], 'day_week'=>$info['day_week'],'minimum_nights'=>$minimum_nights );
                             }
-                            $seasonsRates[$i]['dates'][$j]=array('start_day'=>$day['day']);
+                            $seasonsRates[$i]['dates'][$j]=array('start_day'=>$day['day'],'minimum_nights'=>$minimum_nights);
                             $prev=$day['day'];
                         }
                     }
@@ -286,16 +288,19 @@ class Web extends AbstractConnector
             $j = 0;
             $prev = '';
             foreach($overwrittenDays as $day) {
+				$minimum_nights=isset($basePricesDaysIndexed[$day['day']]) ? $basePricesDaysIndexed[$day['day']]['minimum_nights'] : null; 
+				
                 if(!$params['only_contract'] || 
                    ($params['only_contract'] && isset($contractDaysIndexed[$day['day']]) && (int)$contractDaysIndexed[$day['day']]['contract'])) 
                 {
-                    if($day['rentprice'] == $price) {
+                    if($day['rentprice'] == $price && $minimum_nights==$overwerittenRates[$i]['dates'][$j]['minimum_nights']) {
                         $next = date('Y-m-d', strtotime('+1 day', strtotime($prev)));
                         if($day['day'] != $next)
                         {
                             $overwerittenRates[$i]['dates'][$j]['end_day'] = $prev;
                             $j++;
                             $overwerittenRates[$i]['dates'][$j]['start_day'] = $day['day'];
+							$overwerittenRates[$i]['dates'][$j]['minimum_nights']=$minimum_nights;
                         }
                         $prev = $day['day'];
                     } else {
@@ -307,7 +312,7 @@ class Web extends AbstractConnector
                         $price = $day['rentprice'];
 
                         $overwerittenRates[$i] = array('rentprice' => $price,'name'=>'','season_id'=>0,'day_week'=>'day','minimum_nights'=>$day['minimum_nights']);
-                        $overwerittenRates[$i]['dates'][$j] = array('start_day' => $day['day']);
+                        $overwerittenRates[$i]['dates'][$j] = array('start_day' => $day['day'],'minimum_nights'=>$minimum_nights);
                         $prev = $day['day'];
                     }
                 }

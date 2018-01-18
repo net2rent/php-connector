@@ -277,7 +277,15 @@ class Portal extends AbstractConnector
         return $typologyDaysPrices;
     }
 
-    public function getTypologyDaysPricesPeriods($typologyId)
+	/**
+     * Get prices and minimum_stay periods.
+     *
+     * @param int $typologyId
+     * @param bool $onlyPrices. Optional. If true only aggrupates by prices
+  
+     * @return array array of prices and minimum_stay periods
+     */
+    public function getTypologyDaysPricesPeriods($typologyId,$onlyPrices=false)
     {
         $typologyDaysPrices = $this->getTypologyDaysPrices($typologyId);
         $pricesPeriods = array();
@@ -285,6 +293,7 @@ class Portal extends AbstractConnector
         $endPriceDay = null;
         $price = null;
         $norefoundprice = null;
+		$extrapersonprice = null;
         $minimumStay = null;
         $checkin = null;
         $checkout = null;
@@ -294,19 +303,26 @@ class Portal extends AbstractConnector
             $discountPrice = (isset($typologyDayPrice['discountprice'])) ? $typologyDayPrice['discountprice'] : 0;
             $norefoundRentPrice  = (isset($typologyDayPrice['norefoundprice'])) ? $typologyDayPrice['norefoundprice'] : 0;
             $norefoundDiscountPrice  = (isset($typologyDayPrice['norefounddiscountprice'])) ? $typologyDayPrice['norefounddiscountprice'] : 0;
+			$newExtraPersonPrice = (isset($typologyDayPrice['extrapersonprice'])) ? $typologyDayPrice['extrapersonprice'] : 0;
             $newPrice = $rentPrice - $discountPrice;
             $newNoRefoundPrice = $norefoundRentPrice - $norefoundDiscountPrice;
             $newMinimumStay = (isset($typologyDayPrice['minimum_nights'])) ? $typologyDayPrice['minimum_nights'] : 1;
             $newCheckin = (isset($typologyDayPrice['checkin'])) ? $typologyDayPrice['checkin'] : null;
             $newCheckout = (isset($typologyDayPrice['checkout'])) ? $typologyDayPrice['checkout'] : null;
             
-            $isDifferent = (bool)(($price !== $newPrice) || ($minimumStay !== $newMinimumStay) || ($norefoundprice !== $newNoRefoundPrice));
+			if($onlyPrices) {
+				$isDifferent = (bool)(($price !== $newPrice) || ($norefoundprice !== $newNoRefoundPrice) || ($extrapersonprice !== $newExtraPersonPrice));
+			}
+			else {
+				$isDifferent = (bool)(($price !== $newPrice) || ($norefoundprice !== $newNoRefoundPrice) || ($extrapersonprice !== $newExtraPersonPrice) || ($minimumStay !== $newMinimumStay));
+			}
 
             if($isDifferent) {
                 if($price) {
                     $pricesPeriods[] = array(
                         'price' => $price,
                         'norefoundprice' => $norefoundprice,
+						'extrapersonprice' => $extrapersonprice,
                         'minimum_stay' => $minimumStay,
                         'start_date' => $initialPriceDay,
                         'end_date' => $endPriceDay,
@@ -317,6 +333,7 @@ class Portal extends AbstractConnector
                 $initialPriceDay = $typologyDayPrice['day'];
                 $price = $newPrice;
                 $norefoundprice = $newNoRefoundPrice;
+				$extrapersonprice = $newExtraPersonPrice;
                 $minimumStay = $newMinimumStay;
                 $checkin = $newCheckin;
                 $checkout = $newCheckout;
@@ -327,6 +344,7 @@ class Portal extends AbstractConnector
             $pricesPeriods[] = array(
                 'price' => $price,
                 'norefoundprice' => $norefoundprice,
+				'extrapersonprice' => $extrapersonprice,
                 'minimum_stay' => $minimumStay,
                 'start_date' => $initialPriceDay,
                 'end_date' => $endPriceDay,
