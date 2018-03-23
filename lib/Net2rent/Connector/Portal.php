@@ -20,6 +20,7 @@ class Portal extends AbstractConnector
         'typology_prices' => '/typologies/%s/pricecalendar',
         'typology_portal' => '/typologies/%s/portals/{{portal_id}}',
         'contacts' => '/portals/{{portal}}/contacts',
+		'contact' => '/contacts/',
         'contacts_modify' => '/contacts/%s',
         'booking' => '/portals/{{portal}}/bookings',
         'bookings_external' => '/bookings/bookings/%s',
@@ -30,6 +31,7 @@ class Portal extends AbstractConnector
 		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
 		'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
 		'property_volumediscounts' => '/typologies/%s/volumediscounts',
+		'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
 		'season_days' => '/seasons/%s/days'
     );
 
@@ -381,6 +383,12 @@ class Portal extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('contacts');
         return $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
+    }
+	
+	public function getContact($contactId)
+    {
+        $endPoint = $this->getEndPoint('contact');
+        return $this->api(sprintf($endPoint . '%s',$contactId));
     }
 
     /**

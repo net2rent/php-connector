@@ -53,6 +53,7 @@ class Web extends AbstractConnector
 		'ecommerce_sale_price' => '/ecommerce/sale/price',
 		'booking_ecommercesales' => '/bookings/%s/ecommercesales',
 		'ecommerce_sale_payments' => '/ecommerce/sale/%s/payments/',
+		'promotional_code' => '/promotions/promotionalcodes/%s/availability'
     );
     
     public function getCompany()
@@ -1520,5 +1521,41 @@ class Web extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('ecommerce_sale_payments');
         return $this->api(sprintf($endPoint,$ecommerceSaleId), 'POST',$ecommerceSalePaymentOptions);
+    }
+	
+	/**
+     * Gets promotional code. If exception no code available
+     *
+	 * @param  string  $options['code'] Code
+	 * @param  integer  $options['typology_id'] Typology ID
+	 * @param  integer  $options['contact_id'] Contact ID
+	 * @param  string  $options['date_in'] date in
+     * @return array 
+     */
+    public function getPromotionalCode($code,array $options = array())
+    {
+        $endPoint = $this->getEndPoint('promotional_code');
+
+        $params = array();
+		$params['code']='';
+        if (isset($options['code'])) {
+            $params['code'] = $options['code'];
+        }
+		$params['typology_id']=0;
+        if (isset($options['typology_id'])) {
+            $params['typology_id'] = $options['typology_id'];
+        }
+		$params['contact_id']=0;
+        if (isset($options['contact_id'])) {
+            $params['contact_id'] = $options['contact_id'];
+        }
+		$params['date_in']='';
+        if (isset($options['date_in'])) {
+            $params['date_in'] = $options['date_in'];
+        }
+		
+		$promotionalcode = $this->api(sprintf($endPoint . '?%s',$code, http_build_query($params)));
+        
+        return $promotionalcode;
     }
 }

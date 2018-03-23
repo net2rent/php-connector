@@ -912,7 +912,29 @@ abstract class AbstractConnector
 		$params = array();
 		
 		$endPoint = $this->getEndPoint('property_volumediscounts');
-        return $this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
+		$volumeDiscounts=$this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
+		$volumeDiscountsActive=array();
+		foreach($volumeDiscounts as $volumeDiscount) {
+			if($volumeDiscount['active']) {
+				$volumeDiscountsActive[]=$volumeDiscount;
+			}
+		}
+        return $volumeDiscountsActive;
+	}
+	
+	public function getPropertyMinimumNightsPay($propertyId) {
+		$params = array();
+		
+		$endPoint = $this->getEndPoint('property_minimumnightspay');
+		
+		$minimumNightsPays=$this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
+		$minimumNightsPaysActive=array();
+		foreach($minimumNightsPays as $minimumNightsPay) {
+			if($minimumNightsPay['active']) {
+				$minimumNightsPaysActive[]=$minimumNightsPay;
+			}
+		}		
+        return $minimumNightsPaysActive;
 	}
 	
 	/**
@@ -955,9 +977,9 @@ abstract class AbstractConnector
 				}
 			}
 		}
-		
+	
 		// close last period
-		if($period['to']==null && isset($seasonDay)) {
+		if((!isset($period['to']) || $period['to']==null) && isset($seasonDay)) {
 			$period['to']=$seasonDay;
 			$periods[]=$period;
 		}
