@@ -27,11 +27,13 @@ class Portal extends AbstractConnector
         'booking_external' => '/bookings/booking/%s',
         'booking_external_ref_id' => '/bookings/booking/%s/%s',
         'booking_modify' => '/bookings/%s',
+		'booking_card' => '/bookings/%s/cards/',
 		'bookingrequest' => '/bookings/bookingrequests',
 		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
 		'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
 		'property_volumediscounts' => '/typologies/%s/volumediscounts',
 		'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
+		'property_puntualoffers' => '/typologies/%s/puntualoffers',
 		'season_days' => '/seasons/%s/days'
     );
 
@@ -294,20 +296,28 @@ class Portal extends AbstractConnector
         $initialPriceDay = null;
         $endPriceDay = null;
         $price = null;
+		$price_no_accessories = null;
         $norefoundprice = null;
+		$norefoundprice_no_accessories = null;
+		$discount=null;
 		$extrapersonprice = null;
         $minimumStay = null;
         $checkin = null;
         $checkout = null;
-        
+		
         foreach($typologyDaysPrices as $typologyDayPrice) {
             $rentPrice = (isset($typologyDayPrice['rentprice'])) ? $typologyDayPrice['rentprice'] : 0;
+			$rentPriceNoAccessories = (isset($typologyDayPrice['rentprice_no_accessories'])) ? $typologyDayPrice['rentprice_no_accessories'] : $rentPrice;
             $discountPrice = (isset($typologyDayPrice['discountprice'])) ? $typologyDayPrice['discountprice'] : 0;
             $norefoundRentPrice  = (isset($typologyDayPrice['norefoundprice'])) ? $typologyDayPrice['norefoundprice'] : 0;
+			$norefoundRentPriceNoAccessories = (isset($typologyDayPrice['norefoundprice_no_accessories'])) ? $typologyDayPrice['norefoundprice_no_accessories'] : $norefoundRentPrice;
             $norefoundDiscountPrice  = (isset($typologyDayPrice['norefounddiscountprice'])) ? $typologyDayPrice['norefounddiscountprice'] : 0;
 			$newExtraPersonPrice = (isset($typologyDayPrice['extrapersonprice'])) ? $typologyDayPrice['extrapersonprice'] : 0;
             $newPrice = $rentPrice - $discountPrice;
+			$newPriceNoAccessories = $rentPriceNoAccessories;
             $newNoRefoundPrice = $norefoundRentPrice - $norefoundDiscountPrice;
+			$newNoRefoundPriceNoAccessories = $norefoundRentPriceNoAccessories;
+			$newDiscountPrice=$discountPrice;
             $newMinimumStay = (isset($typologyDayPrice['minimum_nights'])) ? $typologyDayPrice['minimum_nights'] : 1;
             $newCheckin = (isset($typologyDayPrice['checkin'])) ? $typologyDayPrice['checkin'] : null;
             $newCheckout = (isset($typologyDayPrice['checkout'])) ? $typologyDayPrice['checkout'] : null;
@@ -318,12 +328,15 @@ class Portal extends AbstractConnector
 			else {
 				$isDifferent = (bool)(($price !== $newPrice) || ($norefoundprice !== $newNoRefoundPrice) || ($extrapersonprice !== $newExtraPersonPrice) || ($minimumStay !== $newMinimumStay));
 			}
-
+			
             if($isDifferent) {
                 if($price) {
                     $pricesPeriods[] = array(
                         'price' => $price,
+						'price_no_accessories' => $price_no_accessories,
                         'norefoundprice' => $norefoundprice,
+						'norefoundprice_no_accessories' => $norefoundprice_no_accessories,
+						'discount'=>$discount,
 						'extrapersonprice' => $extrapersonprice,
                         'minimum_stay' => $minimumStay,
                         'start_date' => $initialPriceDay,
@@ -334,7 +347,10 @@ class Portal extends AbstractConnector
                 }
                 $initialPriceDay = $typologyDayPrice['day'];
                 $price = $newPrice;
+				$price_no_accessories=$newPriceNoAccessories;
                 $norefoundprice = $newNoRefoundPrice;
+				$norefoundprice_no_accessories=$newNoRefoundPriceNoAccessories;
+				$discount = $newDiscountPrice;
 				$extrapersonprice = $newExtraPersonPrice;
                 $minimumStay = $newMinimumStay;
                 $checkin = $newCheckin;
@@ -345,7 +361,10 @@ class Portal extends AbstractConnector
         if($price) {
             $pricesPeriods[] = array(
                 'price' => $price,
+				'price_no_accessories' => $price_no_accessories,
                 'norefoundprice' => $norefoundprice,
+				'norefoundprice_no_accessories' => $norefoundprice_no_accessories,
+				'discount'=>$discount,
 				'extrapersonprice' => $extrapersonprice,
                 'minimum_stay' => $minimumStay,
                 'start_date' => $initialPriceDay,
@@ -492,6 +511,16 @@ class Portal extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('booking_modify');
         return $this->api(sprintf($endPoint, $bookingId), 'PUT', $params);
+    }
+	
+	/**
+     * Inserts booking card. To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/portal.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=portal1&pas=portal1&section=bookings&call=POST+%2Fbookings%2F%3Abooking_id%2Fcards%2F
+     */
+	public function insertBookingCard($bookingId,array $bookingCardOptions)
+    {
+        $endPoint = $this->getEndPoint('booking_card');
+        return $this->api(sprintf($endPoint,$bookingId), 'POST', $bookingCardOptions);
     }
 	
 	/**

@@ -463,6 +463,7 @@ abstract class AbstractConnector
                     'rent_price5_name' => isset($typology['rent_price5_name']) ? $typology['rent_price5_name'] : null,
                     'rent_price5_offer' => isset($typology['rent_price5_offer']) ? $typology['rent_price5_offer'] : null,
                     'rented' => isset($typology['property_rented']) ? $typology['property_rented'] : 0,
+					'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
                     'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
@@ -725,9 +726,11 @@ abstract class AbstractConnector
             'rent_price5_name' => isset($typology['rent_price5_name']) ? $typology['rent_price5_name'] : null,
             'rent_price5_offer' => isset($typology['rent_price5_offer']) ? $typology['rent_price5_offer'] : null,
             'rented' => isset($typology['property_rented']) ? $typology['property_rented'] : 0,
+			'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
 
             'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
             'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
+			'discount' => isset($typology['discount']) ? $typology['discount'] : 0,
             'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
 			'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
                     'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
@@ -886,7 +889,7 @@ abstract class AbstractConnector
                 }
                 
                 // if accessory is mandatory and checkin is not between dates, ignore
-                if($accessory['mandatory']==1 && $checkin && $accessory['date_from'] && $checkin<$accessory['date_from']) {
+                if($accessory['mandatory']==1 && $checkout && $accessory['date_from'] && $checkout<$accessory['date_from']) {
                     continue;
                 }
                 
@@ -894,11 +897,26 @@ abstract class AbstractConnector
                     continue;
                 }
             }
+			
+			// count nights to apply accessory
+			if(!$accessory['date_from'] && !$accessory['date_to']) {
+				$night_number_accessory=$night_number;
+			}
+			else {
+				$night_number_accessory=0;
+				$date=$checkin;
+				while($date<$checkout) {
+					if($date>=$accessory['date_from'] && $date<=$accessory['date_to']) {
+						$night_number_accessory++;
+					}
+					$date=date('Y-m-d',strtotime($date.' + 1 day'));
+				}
+			}
             
             // calculate accessory price
             $totalprice=0;
-            if($accessory['price_type']=='day') { $totalprice=$accessory['price']*$night_number; }
-            else if($accessory['price_type']=='week') { $totalprice=($accessory['price']/7)*$night_number; }
+            if($accessory['price_type']=='day') { $totalprice=$accessory['price']*$night_number_accessory; }
+            else if($accessory['price_type']=='week') { $totalprice=($accessory['price']/7)*$night_number_accessory; }
             else { $totalprice=$accessory['price']; }
             $accessory['totalprice']=$totalprice;
             
@@ -935,6 +953,37 @@ abstract class AbstractConnector
 			}
 		}		
         return $minimumNightsPaysActive;
+	}
+	
+	/**
+     * Gets property puntual offers
+     *
+     * @param  string  $propertyId
+     * @param  boolean  $options['active'] Filter by active (1=yes, 0=no)
+     * @param  date  $options['start_day'] Filter by puntual offer start date. Format YYYY-MM-DD. Optional.
+     * @param  date  $options['end_day'] Filter by puntual offer end date. Format YYYY-MM-DD. Optional
+	 * @param  boolean  $options['unexpired'] Show only unexpired puntualoffers (start_day <= today) valid values [0=no ,1=yes]
+     * @return array  (items)
+     */
+	public function getPropertyPuntualOffers($propertyId,$options=array()) {
+		$params = array();
+		
+		if(isset($options['active'])) {
+            $params['active'] = $options['active'];
+		}
+		if(isset($options['start_day'])) {
+            $params['start_day'] = $this->checkDateFormat($options['start_day']);
+        }
+		if(isset($options['end_day'])) {
+            $params['end_day'] = $this->checkDateFormat($options['end_day']);
+        }
+		if(isset($options['unexpired'])) {
+            $params['unexpired'] = $options['unexpired'];
+		} 
+		
+		$endPoint = $this->getEndPoint('property_puntualoffers');
+		$puntualOffers=$this->api(sprintf($endPoint . '?%s',$propertyId, http_build_query($params)));
+        return $puntualOffers;
 	}
 	
 	/**
