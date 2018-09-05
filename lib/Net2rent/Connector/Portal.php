@@ -27,6 +27,7 @@ class Portal extends AbstractConnector
         'booking_external' => '/bookings/booking/%s',
         'booking_external_ref_id' => '/bookings/booking/%s/%s',
         'booking_modify' => '/bookings/%s',
+		'booking_accessories' => '/bookings/%s/accessories',
 		'booking_card' => '/bookings/%s/cards/',
 		'bookingrequest' => '/bookings/bookingrequests',
 		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
@@ -74,6 +75,10 @@ class Portal extends AbstractConnector
         if (isset($options['limit'])) {
             $limit = $options['limit'] ? (int)$options['limit'] : null;
         }
+		if(isset($options['active'])) {
+			$params['active']=$options['active'];
+		}
+		
         $endPoint = $this->getEndPoint('typology_properties', array($typology_id));
 
         $apiProperties = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
@@ -99,21 +104,23 @@ class Portal extends AbstractConnector
                 );
             }
             else {
-                $equipment_array = $this->api("/typologies/" . $apiProperty['typology_id'] . "/equipment");
-                $equipments = array();
-                $not_equipments = array(
-                    'id',
-                    'typology_id',
-                    'creation_date',
-                    'creation_usr',
-                    'edition_date',
-                    'edition_usr'
-                );
-                foreach ($equipment_array as $equipment_name => $equipment_value) {
-                    if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
-                        $equipments[$equipment_name] = $equipment_value;
-                    }
-                }
+				$equipments = array();
+				if(!isset($options['active']) || $options['active']==1) {
+					$equipment_array = $this->api("/typologies/" . $apiProperty['typology_id'] . "/equipment");                
+					$not_equipments = array(
+						'id',
+						'typology_id',
+						'creation_date',
+						'creation_usr',
+						'edition_date',
+						'edition_usr'
+					);
+					foreach ($equipment_array as $equipment_name => $equipment_value) {
+						if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
+							$equipments[$equipment_name] = $equipment_value;
+						}
+					}
+				}
 
                 $properties[] = $apiProperty + array(
                     'id' => $apiProperty['id'],
@@ -267,12 +274,12 @@ class Portal extends AbstractConnector
     {
 		$params = array();
         $params['from']=date('Y-m-d');
-        $params['to']=date('Y-m-d',strtotime($params['from'].' + 1 year'));
+        $params['to']=date('Y-m-d',strtotime($params['from'].' + 2 year'));
         if(isset($options['from'])) {
             $params['from'] = $options['from'] ? $options['from']  : date('Y-m-d');
         }
         if(isset($options['to'])) {
-            $params['to'] = $options['to'] ? $options['to']  : date('Y-m-d',strtotime($params['from'].' + 1 year'));
+            $params['to'] = $options['to'] ? $options['to']  : date('Y-m-d',strtotime($params['from'].' + 2 year'));
         }
 		
 		$endPoint = $this->getEndPoint('typology_prices', array($typologyId));
@@ -492,7 +499,7 @@ class Portal extends AbstractConnector
     public function getBookings($params = array())
     {
         $endPoint = $this->getEndPoint('booking');
-        return $this->api($endPoint, 'GET', $params);
+        return $this->api(sprintf($endPoint . '?%s',http_build_query($params)));
     }
 
     public function getBooking($bookingId)
@@ -512,6 +519,11 @@ class Portal extends AbstractConnector
         $endPoint = $this->getEndPoint('booking_modify');
         return $this->api(sprintf($endPoint, $bookingId), 'PUT', $params);
     }
+	
+	public function getBookingAccessories($bookingId) {
+		$endPoint = $this->getEndPoint('booking_accessories',array($bookingId));
+		return $this->api($endPoint, 'GET');
+	}
 	
 	/**
      * Inserts booking card. To get fields, consult online documentation at  

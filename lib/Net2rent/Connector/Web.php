@@ -125,7 +125,7 @@ class Web extends AbstractConnector
             $availabilityPriceDay['minimum_nights']=$baseprice['minimum_nights']; // minimum booking nights if is this entry day
             $availabilityPriceDay['checkin']=$baseprice['checkin']; // 1 if possible checkin this day, 0 if not
             $availabilityPriceDay['checkout']=$baseprice['checkout']; // 1 if possible checkout this day, 0 if not
-            $availabilityPriceDay['available']=(int)$baseprice['available']>0 ? 1 : 0; // available: 1=yes, 0=no
+            $availabilityPriceDay['available']=(float)$baseprice['rentprice']>0 && (int)$baseprice['available']>0 ? 1 : 0; // available: 1=yes, 0=no
             $availabilityPriceDay['not_available']=!isset($propertyStatusDayIndexed[$baseprice['day']]) || $propertyStatusDayIndexed[$baseprice['day']]['status']=='not_available' ? 1 : 0; 
             $availabilityPricesDays[]=$availabilityPriceDay;
         }        

@@ -88,7 +88,7 @@ abstract class AbstractConnector
             '{{company}}' => $this->companyId,            
         );
         $endPoint = str_replace(array_keys($replaceVars) , array_values($replaceVars) , $this->_endPoints[$type]);
-        if (count($params) > 0) {
+        if ($params && is_array($params) && count($params) > 0) {
             array_unshift($params, $endPoint);
             $endPoint = call_user_func_array('sprintf', $params);
         }
@@ -143,6 +143,7 @@ abstract class AbstractConnector
 	 * @param  boolean  $options['terrace'] 1/0 if 1, show properties with terrace
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
 	 * @param  boolean $options['active'] 1/0, if 1 return active properties, if 0 return inactive properties. If null, return both active and inactive. Default value: 1
+	 * @param  boolean $options['ignore_price_0'] 1/0 if 1, show only properties available for dates with price distinct than 0
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -309,6 +310,9 @@ abstract class AbstractConnector
 		else {
 			$params['active']=1;
 		}
+		if (isset($options['ignore_price_0']) && $options['ignore_price_0']) {
+            $params['ignore_price_0'] = 1;
+        }
      
         $params['lg'] = $this->lg;
 
@@ -522,6 +526,15 @@ abstract class AbstractConnector
 												  'it'=> (isset($typology['rent_conditions_it'])) ? $typology['rent_conditions_it'] : null,
 												  'ru'=> (isset($typology['rent_conditions_ru'])) ? $typology['rent_conditions_ru'] : null,
 					),
+					'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
+												  'es'=> (isset($typology['cancellation_policy_es'])) ? $typology['cancellation_policy_es'] : null,
+												  'en'=> (isset($typology['cancellation_policy_en'])) ? $typology['cancellation_policy_en'] : null,
+												  'fr'=> (isset($typology['cancellation_policy_fr'])) ? $typology['cancellation_policy_fr'] : null,
+												  'de'=> (isset($typology['cancellation_policy_de'])) ? $typology['cancellation_policy_de'] : null,
+												  'nl'=> (isset($typology['cancellation_policy_nl'])) ? $typology['cancellation_policy_nl'] : null,
+												  'it'=> (isset($typology['cancellation_policy_it'])) ? $typology['cancellation_policy_it'] : null,
+												  'ru'=> (isset($typology['cancellation_policy_ru'])) ? $typology['cancellation_policy_ru'] : null,
+					),
                     'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
                     
                     // typology_portal fields
@@ -557,7 +570,7 @@ abstract class AbstractConnector
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
      * @return array  (items)
      */
-    public function getProperty($property_id, array $options = array(),$strip_tags=true)
+    public function getProperty($property_id, array $options = array(),$strip_tags=true,$simple_response=false)
     {
         $endPoint = $this->getEndPoint((isset($options['checkin'])) ? 'property_available' : 'property', array(
             $property_id
@@ -598,6 +611,8 @@ abstract class AbstractConnector
         $params['lg'] = $this->lg;
         
         $params['flexible']=isset($options['flexible']) && $options['flexible'] ? 1 : 0 ; 
+		
+		$params['active']=isset($options['active']) ? $options['active'] : '' ; 
 
         $typology = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
         if(isset($options['checkin'])) {
@@ -608,55 +623,58 @@ abstract class AbstractConnector
             }
         }
 
-        $equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");
-        $equipments = array();
-        $not_equipments = array(
-            'id',
-            'typology_id',
-            'creation_date',
-            'creation_usr',
-            'edition_date',
-            'edition_usr'
-        );
-        foreach ($equipment_array as $equipment_name => $equipment_value) {
-            if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
-                $equipments[$equipment_name] = $equipment_value;
-            }
-        }
+		$equipments = array();
+		$images = array();
 		
-		// disable basic_elements if not portal
-		if(!$this->portalId && isset($equipments['basic_elements'])) {
-			unset($equipments['basic_elements']);
+		if(!$simple_response && (!isset($options['active']) || $options['active']==1)) {		
+			$equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");	
+			$not_equipments = array(
+				'id',
+				'typology_id',
+				'creation_date',
+				'creation_usr',
+				'edition_date',
+				'edition_usr'
+			);
+			foreach ($equipment_array as $equipment_name => $equipment_value) {
+				if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
+					$equipments[$equipment_name] = $equipment_value;
+				}
+			}
+
+			// disable basic_elements if not portal
+			if(!$this->portalId && isset($equipments['basic_elements'])) {
+				unset($equipments['basic_elements']);
+			}
+
+			$images_array = $this->api("/typologies/" . $typology['id'] . "/images");
+
+			foreach ($images_array as $image) {
+				$images[$image['id']] = array(
+					'id' => $image['id'],
+					'name' => $image['name'],
+					'description' => array(
+						'es' => $strip_tags ? strip_tags($image['description_es']) : $image['description_es'] ,
+						'ca' => $strip_tags ? strip_tags($image['description_ca']) : $image['description_ca'] ,
+						'en' => $strip_tags ? strip_tags($image['description_en']) : $image['description_en'] ,
+						'fr' => $strip_tags ? strip_tags($image['description_fr']) : $image['description_fr'] ,
+						'de' => $strip_tags ? strip_tags($image['description_de']) : $image['description_de'] ,
+						'nl' => $strip_tags ? strip_tags($image['description_nl']) : $image['description_nl'] ,
+						'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
+						'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
+					) ,
+					'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
+							isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
+							$image['typology_id'],
+							$image['id'],
+							$params['max_w'],
+							$params['max_h'],
+							$params['quality'],
+							$params['watermark']
+					)
+				);
+			}
 		}
-
-        $images_array = $this->api("/typologies/" . $typology['id'] . "/images");
-
-        $images = array();
-        foreach ($images_array as $image) {
-            $images[$image['id']] = array(
-                'id' => $image['id'],
-                'name' => $image['name'],
-                'description' => array(
-                    'es' => $strip_tags ? strip_tags($image['description_es']) : $image['description_es'] ,
-                    'ca' => $strip_tags ? strip_tags($image['description_ca']) : $image['description_ca'] ,
-                    'en' => $strip_tags ? strip_tags($image['description_en']) : $image['description_en'] ,
-                    'fr' => $strip_tags ? strip_tags($image['description_fr']) : $image['description_fr'] ,
-                    'de' => $strip_tags ? strip_tags($image['description_de']) : $image['description_de'] ,
-                    'nl' => $strip_tags ? strip_tags($image['description_nl']) : $image['description_nl'] ,
-                    'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
-                    'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
-                ) ,
-                'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-                        isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
-                        $image['typology_id'],
-                        $image['id'],
-                        $params['max_w'],
-                        $params['max_h'],
-                        $params['quality'],
-                        $params['watermark']
-                )
-            );
-        }
 
         $property = array(
             'id' => $typology['id'],
@@ -823,6 +841,15 @@ abstract class AbstractConnector
 										  'nl'=> (isset($typology['rent_conditions_nl'])) ? $typology['rent_conditions_nl'] : null,
 										  'it'=> (isset($typology['rent_conditions_it'])) ? $typology['rent_conditions_it'] : null,
 										  'ru'=> (isset($typology['rent_conditions_ru'])) ? $typology['rent_conditions_ru'] : null,
+			),
+			'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
+										  'es'=> (isset($typology['cancellation_policy_es'])) ? $typology['cancellation_policy_es'] : null,
+										  'en'=> (isset($typology['cancellation_policy_en'])) ? $typology['cancellation_policy_en'] : null,
+										  'fr'=> (isset($typology['cancellation_policy_fr'])) ? $typology['cancellation_policy_fr'] : null,
+										  'de'=> (isset($typology['cancellation_policy_de'])) ? $typology['cancellation_policy_de'] : null,
+										  'nl'=> (isset($typology['cancellation_policy_nl'])) ? $typology['cancellation_policy_nl'] : null,
+										  'it'=> (isset($typology['cancellation_policy_it'])) ? $typology['cancellation_policy_it'] : null,
+										  'ru'=> (isset($typology['cancellation_policy_ru'])) ? $typology['cancellation_policy_ru'] : null,
 			),
             'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
