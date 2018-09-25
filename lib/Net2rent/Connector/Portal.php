@@ -32,6 +32,7 @@ class Portal extends AbstractConnector
 		'bookingrequest' => '/bookings/bookingrequests',
 		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
 		'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
+		'bookingrequest_card' => '/bookings/bookingrequests/%s/cards/',
 		'property_volumediscounts' => '/typologies/%s/volumediscounts',
 		'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
 		'property_puntualoffers' => '/typologies/%s/puntualoffers',
@@ -560,5 +561,15 @@ class Portal extends AbstractConnector
     {
         $endPoint = $this->getEndPoint('bookingrequest_modify');
         return $this->api(sprintf($endPoint, $bookingRequestId), 'PUT', $params);
+    }
+	
+	/**
+     * Inserts booking request card. To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/portal.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=portal1&pas=portal1&section=bookings&call=POST+%2Fbookings%2F%3Abookingrequests%2F%3Abookingrequest_id%2Fcards%2F
+     */
+	public function insertBookingRequestCard($bookingRequestId,array $bookingCardOptions)
+    {
+        $endPoint = $this->getEndPoint('bookingrequest_card');
+        return $this->api(sprintf($endPoint,$bookingRequestId), 'POST', $bookingCardOptions);
     }
 }
