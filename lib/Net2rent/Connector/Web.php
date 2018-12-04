@@ -34,6 +34,7 @@ class Web extends AbstractConnector
         'puntualoffers' => '/companies/{{company}}/puntualoffers',
         'puntualoffers_property' => '/typologies/%s/puntualoffers',
         'puntualoffer_property' => '/typologies/%s/puntualoffer',
+		'puntualoffer' => '/promotions/puntualoffers/',
         'discounts' => '/companies/{{company}}/discounts',
         'discounts_property' => '/typologies/%s/discounts',
         'properties_building_types' => '/companies/{{company}}/properties-building-types',
@@ -770,6 +771,23 @@ class Web extends AbstractConnector
         );
     }
     
+	public function getPuntualOffer($puntualOfferId) {
+		$endPoint = $this->getEndPoint('puntualoffer');
+		return $this->api(sprintf($endPoint.'/%s',$puntualOfferId), 'GET');
+	}
+	
+	/**
+     * Modifies puntualoffer.To get fields, consult online documentation at  
+     * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=admin%40company.com&pas=admin_company&section=promotions&call=PUT+%2Fpromotions%2Fpuntualoffers%2F%3Aid
+     *
+     * @param  bool $options['active'] Filter by active. Values: 1=yes, 0=no
+     * @return void
+     */
+	public function modifyPuntualOffer($puntualOfferId,array $options=array()) {
+		$endPoint = $this->getEndPoint('puntualoffer');
+		return $this->api(sprintf($endPoint.'/%s',$puntualOfferId), 'PUT', $options);
+	}
+	
     /**
      * Gets discounts
      *

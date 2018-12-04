@@ -330,7 +330,9 @@ abstract class AbstractConnector
                     'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
                     'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
 					'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : "",
-					'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : ""
+					'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : "",
+					'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
+					'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
                 );
             }
             else {
