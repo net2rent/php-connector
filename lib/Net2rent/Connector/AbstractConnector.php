@@ -495,6 +495,8 @@ abstract class AbstractConnector
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
                     'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
                     'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
+					'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
+					'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
 
                     'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
@@ -784,6 +786,8 @@ abstract class AbstractConnector
             'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
             'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
             'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
+			'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
+			'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
 
             'double_beds'=> isset($typology['property_double_beds']) ? $typology['property_double_beds'] : 0,
             'single_beds'=> isset($typology['property_single_beds']) ? $typology['property_single_beds'] : 0,
