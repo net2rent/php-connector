@@ -325,7 +325,7 @@ abstract class AbstractConnector
                 $properties[] = array(
                     'id' => $typology['id'],
                     'name' => $typology['name'],
-                    'ref' => $typology['property_ref_property_string'],
+                    'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : "",
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
                     'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",

@@ -2,7 +2,7 @@
 
 return array(
     'apiConnection' => array(
-        'apiBaseUrl' => 'http://hubtesting.n2rent.com',
+        'apiBaseUrl' => 'http://hubtesting.net2rent.com',
         'apiUser' => 'portal1',
         'apiPassword' => 'portal1',
     ),
