@@ -10,15 +10,15 @@ if (!function_exists('json_decode')) {
 
 abstract class AbstractConnector
 {
-    const VERSION = '1.0';
+  const VERSION = '1.0';
 
-    protected $apiBaseUrl;
-    protected $apiUser;
-    protected $apiPassword;
-    protected $lg;
+  protected $apiBaseUrl;
+  protected $apiUser;
+  protected $apiPassword;
+  protected $lg;
 
-    protected $companyId=0;
-    protected $portalId=0;
+  protected $companyId=0;
+  protected $portalId=0;
 	
 	protected $array_languages=array('ca','es','en','fr','de','nl','it','ru');
 
@@ -112,7 +112,7 @@ abstract class AbstractConnector
      * @param  string $options['ref_string'] Filter by property ref string
      * @param  string $options['commercialization_type'] Valid values: [rental, sale, rental_sale, property_management, rental_property_management], can be multiple separed by , (comma)
      * @param  string $options['rent_type'] Valid values: [turistic, season, residential, any], can be multiple separed by , (comma)
-	 * @param  string $options['category'] Valid values: [turistic, exclusive, premium], can be multiple separed by , (comma)
+     * @param  string $options['category'] Valid values: [turistic, exclusive, premium], can be multiple separed by , (comma)
      * @param  integer  $options['max_w'] Max width of image
      * @param  integer  $options['max_h'] Max height of image
      * @param  integer  $options['quality'] JPEG quality percent of image
@@ -139,11 +139,11 @@ abstract class AbstractConnector
      * @param  boolean  $options['air_conditioning'] 1/0 if 1, show properties with air_conditioning
      * @param  boolean  $options['satellite_tv'] 1/0 if 1, show properties with satellite_tv
      * @param  boolean  $options['barbecue'] 1/0 if 1, show properties with barbecue
-	 * @param  string   $options['building_bame'] Filter by building name
-	 * @param  boolean  $options['terrace'] 1/0 if 1, show properties with terrace
+	   * @param  string   $options['building_bame'] Filter by building name
+	   * @param  boolean  $options['terrace'] 1/0 if 1, show properties with terrace
      * @param  string $options['images_http_https'] Return URL images in http or https Valid values: [http,https] Default: https
-	 * @param  boolean $options['active'] 1/0, if 1 return active properties, if 0 return inactive properties. If null, return both active and inactive. Default value: 1
-	 * @param  boolean $options['ignore_price_0'] 1/0 if 1, show only properties available for dates with price distinct than 0
+	   * @param  boolean $options['active'] 1/0, if 1 return active properties, if 0 return inactive properties. If null, return both active and inactive. Default value: 1
+	   * @param  boolean $options['ignore_price_0'] 1/0 if 1, show only properties available for dates with price distinct than 0
      * @return array  (items|total)
      */
     public function getProperties(array $options = array())
@@ -193,7 +193,7 @@ abstract class AbstractConnector
         if (isset($options['rent_type'])) {
             $params['rent_type'] = $options['rent_type'];
         }
-		if (isset($options['category'])) {
+        if (isset($options['category'])) {
             $params['category'] = $options['category'];
         }
         if (isset($options['building_type'])) {
@@ -293,10 +293,10 @@ abstract class AbstractConnector
         if (isset($options['barbecue'])) {
             $params['barbecue'] = $options['barbecue'];
         }
-		if (isset($options['building_name'])) {
+        if (isset($options['building_name'])) {
             $params['building_name'] = $options['building_name'];
         }
-		if (isset($options['terrace'])) {
+        if (isset($options['terrace'])) {
             $params['terrace'] = $options['terrace'];
         }
         $params['images_http_https']='https';
@@ -304,13 +304,13 @@ abstract class AbstractConnector
         if (isset($options['images_http_https'])) {
             $params['images_http_https'] = in_array($options['images_http_https'],$images_http_https_values) ? $options['images_http_https'] : 'https' ;
         }
-		if (isset($options['active']) && $options['active']!=1) {
+        if (isset($options['active']) && $options['active']!=1) {
             $params['active'] = $options['active'];
         }
-		else {
-			$params['active']=1;
-		}
-		if (isset($options['ignore_price_0']) && $options['ignore_price_0']) {
+        else {
+          $params['active']=1;
+        }
+        if (isset($options['ignore_price_0']) && $options['ignore_price_0']) {
             $params['ignore_price_0'] = 1;
         }
      
@@ -325,14 +325,16 @@ abstract class AbstractConnector
                 $properties[] = array(
                     'id' => $typology['id'],
                     'name' => $typology['name'],
-                    'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : "",
+                    'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
                     'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
-					'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : "",
-					'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : "",
-					'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
-					'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
+                    'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : "",
+                    'edition_date' => isset($typology['edition_date']) ? $typology['edition_date'] : "",
+                    'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
+                    'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
+                    'active'=> isset($typology['active']) ? $typology['active'] : null,
+                    'time_in'=> isset($typology['time_in']) ? $typology['time_in'] : null
                 );
             }
             else {
@@ -355,63 +357,63 @@ abstract class AbstractConnector
 					}
 				}
 
-                $properties[] = array(
-                    'id' => $typology['id'],
-                    'name' => $typology['name'],
-					'building_name' => $typology['building_name'],
-                    'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
-                    'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
-					'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
-                    'capacity' => $typology['capacity'],
-					'min_capacity' => isset($typology['min_capacity']) ? $typology['min_capacity'] : 0,
-					'max_capacity' => isset($typology['max_capacity']) ? $typology['max_capacity'] : 0,
-					'active'=> isset($typology['active']) ? $typology['active'] : null,
-                    'building_type' => $typology['building_type'],
-                    'commercialization_type' => $typology['commercialization_type'],
-                    'rent_type' => isset($typology['rent_type']) ? $typology['rent_type'] : null,
-                    'name_lg' => array(
-                        'es' => strip_tags($typology['name_es']) ,
-                        'ca' => strip_tags($typology['name_ca']) ,
-                        'en' => strip_tags($typology['name_en']) ,
-                        'fr' => strip_tags($typology['name_fr']) ,
-                        'de' => strip_tags($typology['name_de']) ,
-                        'nl' => strip_tags($typology['name_nl']) ,
-                        'it' => strip_tags($typology['name_it']) ,
-                        'ru' => strip_tags($typology['name_ru'])
-                    ) ,
-                    'description' => array(
-                        'es' => strip_tags($typology['description_es']) ,
-                        'ca' => strip_tags($typology['description_ca']) ,
-                        'en' => strip_tags($typology['description_en']) ,
-                        'fr' => strip_tags($typology['description_fr']) ,
-                        'de' => strip_tags($typology['description_de']) ,
-                        'nl' => strip_tags($typology['description_nl']) ,
-                        'it' => strip_tags($typology['description_it']) ,
-                        'ru' => strip_tags($typology['description_ru'])
-                    ) ,
-                    'address' => array(
-                        'address' => $typology['building_address'],
-                        'urbanization' => $typology['building_urbanization'],
-                        'zipcode' => $typology['building_cp'],
-                        'zone' => $typology['building_zone'],
-                        'country' => $typology['building_country_iso'],
-                        'province' => $typology['building_province'],
-                        'city' => $typology['building_city'],
-                        'latitude' => $typology['building_lat'],
-                        'longitude' => $typology['building_long']
-                    ) ,
-                    'equipment' => $equipments,
-                    'average_evaluation' => isset($typology['average_evaluation']) ? $typology['average_evaluation'] : null,
-                    'room_number' => isset($typology['room_number']) ? $typology['room_number'] : 0,
-                    'toilets' => isset($typology['toilets']) ? $typology['toilets'] : 0,
-                    'bathroom_tub'=> isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0,
-                    'bathroom_shower'=> isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0,
-                    'total_toilets' => (isset($typology['toilets']) ? $typology['toilets'] : 0)+(isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0)+(isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0),
-                    
-                    'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
-                    'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
-                    'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
-                    'parking_text'=> 
+        $properties[] = array(
+            'id' => $typology['id'],
+            'name' => $typology['name'],
+            'building_name' => $typology['building_name'],
+            'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
+            'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
+            'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
+            'capacity' => $typology['capacity'],
+            'min_capacity' => isset($typology['min_capacity']) ? $typology['min_capacity'] : 0,
+            'max_capacity' => isset($typology['max_capacity']) ? $typology['max_capacity'] : 0,
+            'active'=> isset($typology['active']) ? $typology['active'] : null,
+            'building_type' => $typology['building_type'],
+            'commercialization_type' => $typology['commercialization_type'],
+            'rent_type' => isset($typology['rent_type']) ? $typology['rent_type'] : null,
+            'name_lg' => array(
+                'es' => strip_tags($typology['name_es']) ,
+                'ca' => strip_tags($typology['name_ca']) ,
+                'en' => strip_tags($typology['name_en']) ,
+                'fr' => strip_tags($typology['name_fr']) ,
+                'de' => strip_tags($typology['name_de']) ,
+                'nl' => strip_tags($typology['name_nl']) ,
+                'it' => strip_tags($typology['name_it']) ,
+                'ru' => strip_tags($typology['name_ru'])
+            ) ,
+            'description' => array(
+                'es' => strip_tags($typology['description_es']) ,
+                'ca' => strip_tags($typology['description_ca']) ,
+                'en' => strip_tags($typology['description_en']) ,
+                'fr' => strip_tags($typology['description_fr']) ,
+                'de' => strip_tags($typology['description_de']) ,
+                'nl' => strip_tags($typology['description_nl']) ,
+                'it' => strip_tags($typology['description_it']) ,
+                'ru' => strip_tags($typology['description_ru'])
+            ) ,
+            'address' => array(
+                'address' => $typology['building_address'],
+                'urbanization' => $typology['building_urbanization'],
+                'zipcode' => $typology['building_cp'],
+                'zone' => $typology['building_zone'],
+                'country' => $typology['building_country_iso'],
+                'province' => $typology['building_province'],
+                'city' => $typology['building_city'],
+                'latitude' => $typology['building_lat'],
+                'longitude' => $typology['building_long']
+            ) ,
+            'equipment' => $equipments,
+            'average_evaluation' => isset($typology['average_evaluation']) ? $typology['average_evaluation'] : null,
+            'room_number' => isset($typology['room_number']) ? $typology['room_number'] : 0,
+            'toilets' => isset($typology['toilets']) ? $typology['toilets'] : 0,
+            'bathroom_tub'=> isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0,
+            'bathroom_shower'=> isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0,
+            'total_toilets' => (isset($typology['toilets']) ? $typology['toilets'] : 0)+(isset($typology['property_bathroom_tub']) ? $typology['property_bathroom_tub'] : 0)+(isset($typology['property_bathroom_shower']) ? $typology['property_bathroom_shower'] : 0),
+
+            'floor'=> isset($typology['property_floor']) ? $typology['property_floor'] : null,
+            'lift'=> isset($typology['property_lift']) ? $typology['property_lift'] : null,
+            'parking'=> isset($typology['parking']) ? $typology['parking'] : null,
+            'parking_text'=> 
 						array(
 								'ca' => isset($typology['property_parking_text_ca']) ? $typology['property_parking_text_ca'] : '',
 								'es' => isset($typology['property_parking_text_es']) ? $typology['property_parking_text_es'] : '',
@@ -423,7 +425,7 @@ abstract class AbstractConnector
 								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
 						),
                     'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
-					'category'=> isset($typology['category']) ? $typology['category'] : null,
+                    'category'=> isset($typology['category']) ? $typology['category'] : null,
                     'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
                     'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
                     'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
@@ -469,15 +471,15 @@ abstract class AbstractConnector
                     'rent_price5_name' => isset($typology['rent_price5_name']) ? $typology['rent_price5_name'] : null,
                     'rent_price5_offer' => isset($typology['rent_price5_offer']) ? $typology['rent_price5_offer'] : null,
                     'rented' => isset($typology['property_rented']) ? $typology['property_rented'] : 0,
-					'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
+                    'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
                     'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
                     'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
-					'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
+                    'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
                     'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
                     'restrictions' => isset($typology['restrictions']) ? $typology['restrictions'] : 0,
                     'online_reservation' => isset($typology['property_online_reservation']) ? $typology['property_online_reservation'] : null,
-					'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
+                    'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
                     'property_meters'=> isset($typology['property_property_meters']) ? $typology['property_property_meters'] : null,
                     'parcel_meters'=> isset($typology['property_parcel_meters']) ? $typology['property_parcel_meters'] : null,
                     'construction_year'=> isset($typology['building_construction_year']) ? $typology['building_construction_year'] : '',
@@ -485,6 +487,8 @@ abstract class AbstractConnector
                     'property_youtube_url'=> isset($typology['property_youtube_url']) ? $typology['property_youtube_url'] : '',
                     'energy_consumption_kwh_m2_year'=> isset($typology['property_energy_consumption_kwh_m2_year']) ? $typology['property_energy_consumption_kwh_m2_year'] : '',
                     'emissions_kg_co2_m2_year'=> isset($typology['property_emissions_kg_co2_m2_year']) ? $typology['property_emissions_kg_co2_m2_year'] : '',
+                    'energy_consumption_kwh_letter'=> isset($typology['property_energy_consumption_kwh_letter']) ? $typology['property_energy_consumption_kwh_letter'] : '',
+                    'emissions_kg_co2_letter'=> isset($typology['property_emissions_kg_co2_letter']) ? $typology['property_emissions_kg_co2_letter'] : '',
 
                     'active_unexpired_promotions'=> isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
 
@@ -495,8 +499,8 @@ abstract class AbstractConnector
                     'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
                     'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
                     'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
-					'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
-					'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
+                    'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
+                    'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
 
                     'release' => isset($typology['release']) ? (int)$typology['release'] : 0,
                     'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
@@ -520,8 +524,8 @@ abstract class AbstractConnector
                     'first_property_id' => isset($typology['property_id']) ? $typology['property_id'] : 0,
                     'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
                     'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0,
-					'rent_conditions' => (isset($typology['rent_conditions'])) ? $typology['rent_conditions'] : null,
-					'rent_conditions_lg' => array('ca'=> (isset($typology['rent_conditions_ca'])) ? $typology['rent_conditions_ca'] : null,
+                    'rent_conditions' => (isset($typology['rent_conditions'])) ? $typology['rent_conditions'] : null,
+                    'rent_conditions_lg' => array('ca'=> (isset($typology['rent_conditions_ca'])) ? $typology['rent_conditions_ca'] : null,
 												  'es'=> (isset($typology['rent_conditions_es'])) ? $typology['rent_conditions_es'] : null,
 												  'en'=> (isset($typology['rent_conditions_en'])) ? $typology['rent_conditions_en'] : null,
 												  'fr'=> (isset($typology['rent_conditions_fr'])) ? $typology['rent_conditions_fr'] : null,
@@ -529,8 +533,8 @@ abstract class AbstractConnector
 												  'nl'=> (isset($typology['rent_conditions_nl'])) ? $typology['rent_conditions_nl'] : null,
 												  'it'=> (isset($typology['rent_conditions_it'])) ? $typology['rent_conditions_it'] : null,
 												  'ru'=> (isset($typology['rent_conditions_ru'])) ? $typology['rent_conditions_ru'] : null,
-					),
-					'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
+                    ),
+                    'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
 												  'es'=> (isset($typology['cancellation_policy_es'])) ? $typology['cancellation_policy_es'] : null,
 												  'en'=> (isset($typology['cancellation_policy_en'])) ? $typology['cancellation_policy_en'] : null,
 												  'fr'=> (isset($typology['cancellation_policy_fr'])) ? $typology['cancellation_policy_fr'] : null,
@@ -538,7 +542,7 @@ abstract class AbstractConnector
 												  'nl'=> (isset($typology['cancellation_policy_nl'])) ? $typology['cancellation_policy_nl'] : null,
 												  'it'=> (isset($typology['cancellation_policy_it'])) ? $typology['cancellation_policy_it'] : null,
 												  'ru'=> (isset($typology['cancellation_policy_ru'])) ? $typology['cancellation_policy_ru'] : null,
-					),
+                    ),
                     'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
                     
                     // typology_portal fields
@@ -550,7 +554,6 @@ abstract class AbstractConnector
                     'cleaning_fee' => isset($typology['cleaning_fee']) ? $typology['cleaning_fee'] : "",
                 );
             }
-
         }
 
         return array(
@@ -616,7 +619,7 @@ abstract class AbstractConnector
         
         $params['flexible']=isset($options['flexible']) && $options['flexible'] ? 1 : 0 ; 
 		
-		$params['active']=isset($options['active']) ? $options['active'] : '' ; 
+        $params['active']=isset($options['active']) ? $options['active'] : '' ; 
 
         $typology = $this->api(sprintf($endPoint . '?%s', http_build_query($params)));
         if(isset($options['checkin'])) {
@@ -627,70 +630,70 @@ abstract class AbstractConnector
             }
         }
 
-		$equipments = array();
-		$images = array();
-		
-		if(!$simple_response && (!isset($options['active']) || $options['active']==1)) {		
-			$equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");	
-			$not_equipments = array(
-				'id',
-				'typology_id',
-				'creation_date',
-				'creation_usr',
-				'edition_date',
-				'edition_usr'
-			);
-			foreach ($equipment_array as $equipment_name => $equipment_value) {
-				if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
-					$equipments[$equipment_name] = $equipment_value;
-				}
-			}
+        $equipments = array();
+        $images = array();
 
-			// disable basic_elements if not portal
-			if(!$this->portalId && isset($equipments['basic_elements'])) {
-				unset($equipments['basic_elements']);
-			}
+        if(!$simple_response && (!isset($options['active']) || $options['active']==1)) {		
+          $equipment_array = $this->api("/typologies/" . $typology['id'] . "/equipment");	
+          $not_equipments = array(
+            'id',
+            'typology_id',
+            'creation_date',
+            'creation_usr',
+            'edition_date',
+            'edition_usr'
+          );
+          foreach ($equipment_array as $equipment_name => $equipment_value) {
+            if (strpos($equipment_name, '_model') == false && in_array($equipment_name, $not_equipments, true) == false) {
+              $equipments[$equipment_name] = $equipment_value;
+            }
+          }
 
-			$images_array = $this->api("/typologies/" . $typology['id'] . "/images");
+          // disable basic_elements if not portal
+          if(!$this->portalId && isset($equipments['basic_elements'])) {
+            unset($equipments['basic_elements']);
+          }
 
-			foreach ($images_array as $image) {
-				$images[$image['id']] = array(
-					'id' => $image['id'],
-					'name' => $image['name'],
-					'description' => array(
-						'es' => $strip_tags ? strip_tags($image['description_es']) : $image['description_es'] ,
-						'ca' => $strip_tags ? strip_tags($image['description_ca']) : $image['description_ca'] ,
-						'en' => $strip_tags ? strip_tags($image['description_en']) : $image['description_en'] ,
-						'fr' => $strip_tags ? strip_tags($image['description_fr']) : $image['description_fr'] ,
-						'de' => $strip_tags ? strip_tags($image['description_de']) : $image['description_de'] ,
-						'nl' => $strip_tags ? strip_tags($image['description_nl']) : $image['description_nl'] ,
-						'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
-						'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
-					) ,
-					'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
-							isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
-							$image['typology_id'],
-							$image['id'],
-							$params['max_w'],
-							$params['max_h'],
-							$params['quality'],
-							$params['watermark']
-					)
-				);
-			}
-		}
+          $images_array = $this->api("/typologies/" . $typology['id'] . "/images");
+
+          foreach ($images_array as $image) {
+            $images[$image['id']] = array(
+              'id' => $image['id'],
+              'name' => $image['name'],
+              'description' => array(
+                'es' => $strip_tags ? strip_tags($image['description_es']) : $image['description_es'] ,
+                'ca' => $strip_tags ? strip_tags($image['description_ca']) : $image['description_ca'] ,
+                'en' => $strip_tags ? strip_tags($image['description_en']) : $image['description_en'] ,
+                'fr' => $strip_tags ? strip_tags($image['description_fr']) : $image['description_fr'] ,
+                'de' => $strip_tags ? strip_tags($image['description_de']) : $image['description_de'] ,
+                'nl' => $strip_tags ? strip_tags($image['description_nl']) : $image['description_nl'] ,
+                'it' => $strip_tags ? strip_tags($image['description_it']) : $image['description_it'] ,
+                'ru' => $strip_tags ? strip_tags($image['description_ru']) : $image['description_ru']
+              ) ,
+              'image' => sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s&watermark=%s',
+                  isset($params['images_http_https']) && $params['images_http_https']=='http' ? str_replace('https','http',$this->apiBaseUrl) : $this->apiBaseUrl,
+                  $image['typology_id'],
+                  $image['id'],
+                  $params['max_w'],
+                  $params['max_h'],
+                  $params['quality'],
+                  $params['watermark']
+              )
+            );
+          }
+        }
 
         $property = array(
             'id' => $typology['id'],
             'name' => $typology['name'],
-			'building_name' => $typology['building_name'],
+            'building_name' => $typology['building_name'],
             'ref' => isset($typology['property_ref_property_string']) ? $typology['property_ref_property_string'] : null,
             'generalitat_reference' => isset($typology['property_generalitat_reference']) ? $typology['property_generalitat_reference'] : null,
-			'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
+            'generalitat_reference_control' => isset($typology['property_generalitat_reference_control']) ? $typology['property_generalitat_reference_control'] : null,
             'toilets' => isset($typology['toilets']) ? $typology['toilets'] : 0,
             'capacity' => isset($typology['capacity']) ? $typology['capacity'] : 0,
-			'min_capacity' => isset($typology['min_capacity']) ? $typology['min_capacity'] : 0,
-			'max_capacity' => isset($typology['max_capacity']) ? $typology['max_capacity'] : 0,
+            'min_capacity' => isset($typology['min_capacity']) ? $typology['min_capacity'] : 0,
+            'max_capacity' => isset($typology['max_capacity']) ? $typology['max_capacity'] : 0,
             'building_type' => isset($typology['building_type']) ? $typology['building_type'] : null,
             'commercialization_type' => $typology['commercialization_type'],
             'rent_type' => $typology['rent_type'],
@@ -748,14 +751,14 @@ abstract class AbstractConnector
             'rent_price5_name' => isset($typology['rent_price5_name']) ? $typology['rent_price5_name'] : null,
             'rent_price5_offer' => isset($typology['rent_price5_offer']) ? $typology['rent_price5_offer'] : null,
             'rented' => isset($typology['property_rented']) ? $typology['property_rented'] : 0,
-			'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
+            'blocked' => isset($typology['property_blocked']) ? $typology['property_blocked'] : 0,
 
             'price_from' => isset($typology['price_from']) ? $typology['price_from'] : 0,
             'totalprice' => isset($typology['totalprice']) ? $typology['totalprice'] : 0,
-			'discount' => isset($typology['discount']) ? $typology['discount'] : 0,
+            'discount' => isset($typology['discount']) ? $typology['discount'] : 0,
             'finalprice' => isset($typology['finalprice']) ? $typology['finalprice'] : 0,
-			'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
-                    'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
+            'norefoundprice' => isset($typology['norefoundprice']) && $typology['norefoundprice'] ? $typology['norefoundprice'] : (isset($typology['totalprice']) ? $typology['totalprice'] : 0),
+            'finalpricenorefound' => isset($typology['finalpricenorefound']) && $typology['finalpricenorefound'] ? $typology['finalpricenorefound'] : (isset($typology['finalprice']) ? $typology['finalprice'] : 0),
             'vat' => isset($typology['vat']) ? $typology['vat'] : 0,
 
             'online_reservation' => (isset($typology['default_online_reservation'])) ? $typology['default_online_reservation'] : null,
@@ -778,7 +781,7 @@ abstract class AbstractConnector
 								'ru' => isset($typology['property_parking_text_ru']) ? $typology['property_parking_text_ru'] : ''
 						),
             'garage'=> isset($typology['garage']) ? $typology['garage'] : null,
-			'category'=> isset($typology['category']) ? $typology['category'] : null,
+            'category'=> isset($typology['category']) ? $typology['category'] : null,
             'views'=> isset($typology['property_views']) ? $typology['property_views'] : null,
             'garden'=> isset($typology['garden']) ? $typology['garden'] : null,
             'pool_type'=> isset($typology['pool_type']) ? $typology['pool_type'] : null,
@@ -786,8 +789,8 @@ abstract class AbstractConnector
             'sea_distance'=> isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
             'center_distance'=> isset($typology['center_distance']) ? $typology['center_distance'] : null,
             'accept_young'=> isset($typology['accept_young']) ? $typology['accept_young'] : null,
-			'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
-			'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
+            'min_age'=> isset($typology['min_age']) && $typology['min_age'] ? $typology['min_age'] : null,
+            'events_allowed'=> isset($typology['events_allowed']) ? $typology['events_allowed'] : null,
 
             'double_beds'=> isset($typology['property_double_beds']) ? $typology['property_double_beds'] : 0,
             'single_beds'=> isset($typology['property_single_beds']) ? $typology['property_single_beds'] : 0,
@@ -813,6 +816,8 @@ abstract class AbstractConnector
             'property_youtube_url'=> isset($typology['property_youtube_url']) ? $typology['property_youtube_url'] : '',
             'energy_consumption_kwh_m2_year'=> isset($typology['property_energy_consumption_kwh_m2_year']) ? $typology['property_energy_consumption_kwh_m2_year'] : '',
             'emissions_kg_co2_m2_year'=> isset($typology['property_emissions_kg_co2_m2_year']) ? $typology['property_emissions_kg_co2_m2_year'] : '',
+            'energy_consumption_kwh_letter'=> isset($typology['property_energy_consumption_kwh_letter']) ? $typology['property_energy_consumption_kwh_letter'] : '',
+            'emissions_kg_co2_letter'=> isset($typology['property_emissions_kg_co2_letter']) ? $typology['property_emissions_kg_co2_letter'] : '',
             
             'active_unexpired_promotions'=> isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
 
@@ -839,7 +844,7 @@ abstract class AbstractConnector
             'building_id' => isset($typology['building_id']) ? $typology['building_id'] : 0,
             'company_id' => isset($typology['building_company_id']) ? $typology['building_company_id'] : 0,
             'rent_conditions' => (isset($typology['rent_conditions'])) ? $typology['rent_conditions'] : null,
-			'rent_conditions_lg' => array('ca'=> (isset($typology['rent_conditions_ca'])) ? $typology['rent_conditions_ca'] : null,
+            'rent_conditions_lg' => array('ca'=> (isset($typology['rent_conditions_ca'])) ? $typology['rent_conditions_ca'] : null,
 										  'es'=> (isset($typology['rent_conditions_es'])) ? $typology['rent_conditions_es'] : null,
 										  'en'=> (isset($typology['rent_conditions_en'])) ? $typology['rent_conditions_en'] : null,
 										  'fr'=> (isset($typology['rent_conditions_fr'])) ? $typology['rent_conditions_fr'] : null,
@@ -847,8 +852,8 @@ abstract class AbstractConnector
 										  'nl'=> (isset($typology['rent_conditions_nl'])) ? $typology['rent_conditions_nl'] : null,
 										  'it'=> (isset($typology['rent_conditions_it'])) ? $typology['rent_conditions_it'] : null,
 										  'ru'=> (isset($typology['rent_conditions_ru'])) ? $typology['rent_conditions_ru'] : null,
-			),
-			'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
+            ),
+            'cancellation_policy_lg' => array('ca'=> (isset($typology['cancellation_policy_ca'])) ? $typology['cancellation_policy_ca'] : null,
 										  'es'=> (isset($typology['cancellation_policy_es'])) ? $typology['cancellation_policy_es'] : null,
 										  'en'=> (isset($typology['cancellation_policy_en'])) ? $typology['cancellation_policy_en'] : null,
 										  'fr'=> (isset($typology['cancellation_policy_fr'])) ? $typology['cancellation_policy_fr'] : null,
@@ -856,7 +861,7 @@ abstract class AbstractConnector
 										  'nl'=> (isset($typology['cancellation_policy_nl'])) ? $typology['cancellation_policy_nl'] : null,
 										  'it'=> (isset($typology['cancellation_policy_it'])) ? $typology['cancellation_policy_it'] : null,
 										  'ru'=> (isset($typology['cancellation_policy_ru'])) ? $typology['cancellation_policy_ru'] : null,
-			),
+            ),
             'tax_price' => (isset($typology['tax_price'])) ? $typology['tax_price'] : null,
             'prebooking_days' => (isset($typology['prebooking_days'])) ? $typology['prebooking_days'] : null,
             'perc_initial_payment' => (isset($typology['perc_initial_payment'])) ? $typology['perc_initial_payment'] : null,
@@ -931,20 +936,20 @@ abstract class AbstractConnector
                 }
             }
 			
-			// count nights to apply accessory
-			if(!$accessory['date_from'] && !$accessory['date_to']) {
-				$night_number_accessory=$night_number;
-			}
-			else {
-				$night_number_accessory=0;
-				$date=$checkin;
-				while($date<$checkout) {
-					if($date>=$accessory['date_from'] && $date<=$accessory['date_to']) {
-						$night_number_accessory++;
-					}
-					$date=date('Y-m-d',strtotime($date.' + 1 day'));
-				}
-			}
+            // count nights to apply accessory
+            if(!$accessory['date_from'] && !$accessory['date_to']) {
+              $night_number_accessory=$night_number;
+            }
+            else {
+              $night_number_accessory=0;
+              $date=$checkin;
+              while($date<$checkout) {
+                if($date>=$accessory['date_from'] && $date<=$accessory['date_to']) {
+                  $night_number_accessory++;
+                }
+                $date=date('Y-m-d',strtotime($date.' + 1 day'));
+              }
+            }
             
             // calculate accessory price
             $totalprice=0;
@@ -970,7 +975,7 @@ abstract class AbstractConnector
 				$volumeDiscountsActive[]=$volumeDiscount;
 			}
 		}
-        return $volumeDiscountsActive;
+    return $volumeDiscountsActive;
 	}
 	
 	public function getPropertyMinimumNightsPay($propertyId) {
@@ -985,7 +990,7 @@ abstract class AbstractConnector
 				$minimumNightsPaysActive[]=$minimumNightsPay;
 			}
 		}		
-        return $minimumNightsPaysActive;
+    return $minimumNightsPaysActive;
 	}
 	
 	/**
