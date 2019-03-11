@@ -13,6 +13,7 @@ class Portal extends AbstractConnector
         'typology_properties' => '/typologies/%s/properties',
         'companies' => '/portals/{{portal}}/companies',
         'company' => '/companies/%s',
+        'company_portal' => '/portals/{{portal}}/companies/%s',
         'property_status' => '/properties/%s/propertystatus',
         'property_accessories' => '/properties/%s/propertyaccessories',
         'availability_portals' => '/typologies/%s/portal/{{portal_id}}/availability_portals',
@@ -20,23 +21,23 @@ class Portal extends AbstractConnector
         'typology_prices' => '/typologies/%s/pricecalendar',
         'typology_portal' => '/typologies/%s/portals/{{portal_id}}',
         'contacts' => '/portals/{{portal}}/contacts',
-		'contact' => '/contacts/',
+        'contact' => '/contacts/',
         'contacts_modify' => '/contacts/%s',
         'booking' => '/portals/{{portal}}/bookings',
         'bookings_external' => '/bookings/bookings/%s',
         'booking_external' => '/bookings/booking/%s',
         'booking_external_ref_id' => '/bookings/booking/%s/%s',
         'booking_modify' => '/bookings/%s',
-		'booking_accessories' => '/bookings/%s/accessories',
-		'booking_card' => '/bookings/%s/cards/',
-		'bookingrequest' => '/bookings/bookingrequests',
-		'bookingrequest_modify' => '/bookings/bookingrequests/%s',
-		'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
-		'bookingrequest_card' => '/bookings/bookingrequests/%s/cards/',
-		'property_volumediscounts' => '/typologies/%s/volumediscounts',
-		'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
-		'property_puntualoffers' => '/typologies/%s/puntualoffers',
-		'season_days' => '/seasons/%s/days'
+        'booking_accessories' => '/bookings/%s/accessories',
+        'booking_card' => '/bookings/%s/cards/',
+        'bookingrequest' => '/bookings/bookingrequests',
+        'bookingrequest_modify' => '/bookings/bookingrequests/%s',
+        'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
+        'bookingrequest_card' => '/bookings/bookingrequests/%s/cards/',
+        'property_volumediscounts' => '/typologies/%s/volumediscounts',
+        'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
+        'property_puntualoffers' => '/typologies/%s/puntualoffers',
+        'season_days' => '/seasons/%s/days'
     );
 
     public function getCompanies()
@@ -382,6 +383,17 @@ class Portal extends AbstractConnector
             );
         }
         return $pricesPeriods;
+    }
+    
+    /**
+     * modify company portal parameters
+     * @param  integer $companyId Company id
+     * @param string $params['portal_access_token']
+     */
+    public function modifyCompanyPortal($companyId,$params = array())
+    {
+        $endPoint = $this->getEndPoint('company_portal');
+        $this->api(sprintf($endPoint, $companyId), 'PUT', $params);
     }
     
     /**
