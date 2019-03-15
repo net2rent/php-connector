@@ -27,14 +27,14 @@ class Web extends AbstractConnector
         'booking_search' => '/companies/{{company}}/bookings',
         'booking_person' => '/bookings/%s/people/',
         'booking_accessory' => '/bookings/%s/accessories/',
-		'booking_accessories' => '/bookings/%s/accessories',
+        'booking_accessories' => '/bookings/%s/accessories',
         'payments' => '/bookings/%s/payments',
         'payment' => '/bookings/%s/payments/',
         'comments' => '/typologies/%s/clientcomments',
         'puntualoffers' => '/companies/{{company}}/puntualoffers',
         'puntualoffers_property' => '/typologies/%s/puntualoffers',
         'puntualoffer_property' => '/typologies/%s/puntualoffer',
-		'puntualoffer' => '/promotions/puntualoffers/',
+        'puntualoffer' => '/promotions/puntualoffers/',
         'discounts' => '/companies/{{company}}/discounts',
         'discounts_property' => '/typologies/%s/discounts',
         'properties_building_types' => '/companies/{{company}}/properties-building-types',
@@ -43,18 +43,19 @@ class Web extends AbstractConnector
         'companies_minimum_nights' => '/companies/{{company}}/baseprices/minimum_nights',
         'companies_entry_days' => '/companies/{{company}}/baseprices/entry_days',
         'companies_out_days' => '/companies/{{company}}/baseprices/out_days',
-		'packages' => '/companies/{{company}}/packages',
-		'package' => '/packages/%s',
-		'package_available_properties' => '/packages/%s/availabletypologies',
-		'ecommerce_categories' => '/companies/{{company}}/ecommercecategories',
-		'ecommerce_products' => '/companies/{{company}}/ecommerceproducts',
-		'ecommerce_product' => '/ecommerce/product/%s',
-		'ecommerce_product_days' => '/ecommerce/product/%s/days',
-		'ecommerce_sale' => '/ecommerce/sale/',
-		'ecommerce_sale_price' => '/ecommerce/sale/price',
-		'booking_ecommercesales' => '/bookings/%s/ecommercesales',
-		'ecommerce_sale_payments' => '/ecommerce/sale/%s/payments/',
-		'promotional_code' => '/promotions/promotionalcodes/%s/availability'
+        'packages' => '/companies/{{company}}/packages',
+        'package' => '/packages/%s',
+        'package_available_properties' => '/packages/%s/availabletypologies',
+        'ecommerce_categories' => '/companies/{{company}}/ecommercecategories',
+        'ecommerce_products' => '/companies/{{company}}/ecommerceproducts',
+        'ecommerce_product' => '/ecommerce/product/%s',
+        'ecommerce_product_days' => '/ecommerce/product/%s/days',
+        'ecommerce_sale' => '/ecommerce/sale/',
+        'ecommerce_sale_price' => '/ecommerce/sale/price',
+        'booking_ecommercesales' => '/bookings/%s/ecommercesales',
+        'ecommerce_sale_payments' => '/ecommerce/sale/%s/payments/',
+        'promotional_code' => '/promotions/promotionalcodes/%s/availability',
+        'send_email' => '/companies/{{company}}/emails'
     );
     
     public function getCompany()
@@ -1514,15 +1515,15 @@ class Web extends AbstractConnector
         return $sale_price;
     }
 	
-	/**
-     * Inserts an ecommerce sale. To get fields, consult online documentation at  
-     * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=&section=ecommerce&call=POST+%2Fecommerce%2Fsale%2F
-     */
-    public function insertEcommerceSale(array $ecommerceSaleOptions)
-    {
-        $endPoint = $this->getEndPoint('ecommerce_sale');
-        return $this->api($endPoint, 'POST', $ecommerceSaleOptions);
-    }
+  /**
+   * Inserts an ecommerce sale. To get fields, consult online documentation at  
+   * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=&section=ecommerce&call=POST+%2Fecommerce%2Fsale%2F
+   */
+  public function insertEcommerceSale(array $ecommerceSaleOptions)
+  {
+      $endPoint = $this->getEndPoint('ecommerce_sale');
+      return $this->api($endPoint, 'POST', $ecommerceSaleOptions);
+  }
 	
 	public function getBookingEcommercesales($bookingId) {
 		$endPoint = $this->getEndPoint('booking_ecommercesales');
@@ -1542,38 +1543,48 @@ class Web extends AbstractConnector
     }
 	
 	/**
-     * Gets promotional code. If exception no code available
-     *
-	 * @param  string  $options['code'] Code
-	 * @param  integer  $options['typology_id'] Typology ID
-	 * @param  integer  $options['contact_id'] Contact ID
-	 * @param  string  $options['date_in'] date in
-     * @return array 
-     */
-    public function getPromotionalCode($code,array $options = array())
-    {
-        $endPoint = $this->getEndPoint('promotional_code');
+  * Gets promotional code. If exception no code available
+  *
+  * @param  string  $options['code'] Code
+  * @param  integer  $options['typology_id'] Typology ID
+  * @param  integer  $options['contact_id'] Contact ID
+  * @param  string  $options['date_in'] date in
+    * @return array 
+    */
+   public function getPromotionalCode($code,array $options = array())
+   {
+       $endPoint = $this->getEndPoint('promotional_code');
 
-        $params = array();
-		$params['code']='';
-        if (isset($options['code'])) {
-            $params['code'] = $options['code'];
-        }
-		$params['typology_id']=0;
-        if (isset($options['typology_id'])) {
-            $params['typology_id'] = $options['typology_id'];
-        }
-		$params['contact_id']=0;
-        if (isset($options['contact_id'])) {
-            $params['contact_id'] = $options['contact_id'];
-        }
-		$params['date_in']='';
-        if (isset($options['date_in'])) {
-            $params['date_in'] = $options['date_in'];
-        }
-		
-		$promotionalcode = $this->api(sprintf($endPoint . '?%s',$code, http_build_query($params)));
-        
-        return $promotionalcode;
-    }
+       $params = array();
+       $params['code']='';
+       if (isset($options['code'])) {
+           $params['code'] = $options['code'];
+       }
+       $params['typology_id']=0;
+       if (isset($options['typology_id'])) {
+           $params['typology_id'] = $options['typology_id'];
+       }
+       $params['contact_id']=0;
+       if (isset($options['contact_id'])) {
+           $params['contact_id'] = $options['contact_id'];
+       }
+       $params['date_in']='';
+       if (isset($options['date_in'])) {
+           $params['date_in'] = $options['date_in'];
+       }
+
+       $promotionalcode = $this->api(sprintf($endPoint . '?%s',$code, http_build_query($params)));
+
+       return $promotionalcode;
+   }
+   
+   /**
+   * Sends a mail through net2rent. To get fields, consult online documentation at  
+   * https://hub.net2rent.com/doc/employee.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=admin%40company.com&pas=admin_company&section=companies&call=POST+%2Fcompanies%2F%3Acompany_id%2Femails%2F
+   */
+  public function sendEmail(array $emailOptions)
+  {
+      $endPoint = $this->getEndPoint('send_email');
+      return $this->api($endPoint, 'POST', $emailOptions);
+  }
 }

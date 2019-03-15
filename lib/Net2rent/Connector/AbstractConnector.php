@@ -549,6 +549,7 @@ abstract class AbstractConnector
             // typology_portal fields
             'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
             'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+            'sync_errors' => isset($typology['sync_errors']) ? $typology['sync_errors'] : 0,
             'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
             'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
             'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
@@ -873,6 +874,7 @@ abstract class AbstractConnector
         // typology_portal fields
         'hotel_id' => isset($typology['hotel_id']) ? $typology['hotel_id'] : "",
         'room_id' => isset($typology['room_id']) ? $typology['room_id'] : "",
+        'sync_errors' => isset($typology['sync_errors']) ? $typology['sync_errors'] : 0,
         'cancellation_policy' => isset($typology['cancellation_policy']) ? $typology['cancellation_policy'] : "",
         'monthly_price_factor' => isset($typology['monthly_price_factor']) ? $typology['monthly_price_factor'] : "",
         'weekly_price_factor' => isset($typology['weekly_price_factor']) ? $typology['weekly_price_factor'] : "",
