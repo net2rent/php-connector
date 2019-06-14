@@ -115,6 +115,9 @@ abstract class AbstractConnector {
    * @param  integer  $options['orderdesc'] 1/0 if 1, order DESC, else order ASC
    * @param  boolean  $options['simple_response'] To get few fields. Only available from Portal connector
    * @param  string $options['pool_type'] Valid values: [no_pool, communal, private]
+   * @param  float $options['max_total_price'] Maximum total rent price when checkin and chekout are set. If checkin and checkout are not set this field is ignored
+   * @param  float $options['rent_price_min'] Minimum sell price
+   * @param  float $options['rent_price_max'] Maximum sell price
    * @param  float $options['sell_price_min'] Minimum sell price
    * @param  float $options['sell_price_max'] Maximum sell price
    * @param  integer $options['min_capacity'] Minimum capacity
@@ -194,6 +197,15 @@ abstract class AbstractConnector {
     }
     if (isset($options['highlighted'])) {
       $params['highlighted'] = $options['highlighted'];
+    }
+    if (isset($options['max_total_price'])) {
+      $params['max_total_price'] = $options['max_total_price'];
+    }
+    if (isset($options['rent_price_min'])) {
+      $params['rent_price_min'] = $options['rent_price_min'];
+    }
+    if (isset($options['rent_price_max'])) {
+      $params['rent_price_max'] = $options['rent_price_max'];
     }
     if (isset($options['sell_price_min'])) {
       $params['sell_price_min'] = $options['sell_price_min'];
@@ -1038,8 +1050,13 @@ abstract class AbstractConnector {
     return $periods;
   }
 
-  public function getAvailability($property_id, array $options = array()) {
+  public function getAvailability($propertyId, array $options = array()) {
 
+  }
+
+  public function getPropertyPDF($propertyId, $template, $lang) {
+    $endPoint = $this->getEndPoint('property_pdf');
+    return $this->api(sprintf($endPoint, $propertyId, $template, $lang));
   }
 
   protected function checkDateFormat($date) {
@@ -1138,7 +1155,7 @@ abstract class AbstractConnector {
     }
 
     $response = json_decode($result, true);
-    if ($response === false) {
+    if ($response === false || json_last_error() != JSON_ERROR_NONE) {
       $response = $result;
     }
 

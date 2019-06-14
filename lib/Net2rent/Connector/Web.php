@@ -19,6 +19,7 @@ class Web extends AbstractConnector {
     'property_propertystatus' => '/properties/%s/propertystatus',
     'property_availability' => '/typologies/%s/pricecalendar',
     'property_accessories' => '/properties/%s/propertyaccessories',
+    'property_pdf' => '/typologies/%s/template/%s/%s/pdf',
     'season_days' => '/seasons/%d/days',
     'contacts' => '/companies/{{company}}/contacts',
     'contact' => '/contacts/',
@@ -581,6 +582,7 @@ class Web extends AbstractConnector {
    * @param  string $options['city'] Filter by city name
    * @param  string $options['building_type'] Filter by building_type
    * @param  string $options['min_capacity'] Filter by capacity from
+   * @param  string $options['max_price'] Filter by max price of the puntualoffer
    * @param  integer $options['limit'] Limit results
    * @param  string $options['orderby'] Order comments field
    * @param  string $options['orderdesc'] Order comments ASC (0) or DESC (1)
@@ -637,6 +639,10 @@ class Web extends AbstractConnector {
     $params['min_capacity'] = null;
     if (isset($options['min_capacity'])) {
       $params['min_capacity'] = $options['min_capacity'];
+    }
+    $params['max_price'] = null;
+    if (isset($options['max_price'])) {
+      $params['max_price'] = $options['max_price'];
     }
     $params['orderby'] = 'puntualoffer.start_day';
     if (isset($options['orderby'])) {
