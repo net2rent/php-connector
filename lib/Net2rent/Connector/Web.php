@@ -444,12 +444,12 @@ class Web extends AbstractConnector {
     );
   }
 
-  public function searchBooking($bookingRef, $email) {
+  public function searchBooking($bookingRef, $emailToken) {
     $endPoint = $this->getEndPoint('booking_search');
     $booking = $this->api(sprintf($endPoint . '?ref_string=%s', urlencode($bookingRef)));
 
-    // only return booking if email matches
-    if ($booking && !empty($booking) && $booking[0]['contact_email'] == $email) {
+    // only return booking if email or improve_form_token matches
+    if ($booking && !empty($booking) && ($booking[0]['contact_email'] == $emailToken || $booking[0]['improve_form_token'] == $emailToken)) {
       return $booking[0];
     }
     else {
