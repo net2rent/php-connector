@@ -33,6 +33,7 @@ class Portal extends AbstractConnector {
     'bookingrequest' => '/bookings/bookingrequests',
     'bookingrequest_modify' => '/bookings/bookingrequests/%s',
     'bookingrequest_external_ref_id' => '/bookings/bookingrequests/%s/%s',
+    'bookingrequest_external_id' => '/bookings/bookingrequests/external/%s',
     'bookingrequest_card' => '/bookings/bookingrequests/%s/cards/',
     'property_volumediscounts' => '/typologies/%s/volumediscounts',
     'property_minimumnightspay' => '/typologies/%s/minimumnightspay',
@@ -63,7 +64,7 @@ class Portal extends AbstractConnector {
    *
    * @param  integer  $typology_id Typology id
    * @param  boolean  $options['simple_response'] To get few fields
-   * @param  integer  $options['limit'] Limit to this number of properties 
+   * @param  integer  $options['limit'] Limit to this number of properties
    * @return array  (items|total)
    */
   public function getTypologyProperties($typology_id, $options = array()) {
@@ -212,7 +213,7 @@ class Portal extends AbstractConnector {
     $i = 0;
     $date = $params['from'];
     while ($date <= $params['to']) {
-      // if matches availability portal day with availability day, get data, else put available to 0 
+      // if matches availability portal day with availability day, get data, else put available to 0
       $availabilityPortalDay = isset($availabilityPortalDaysDayIndexed[$date]) && $availabilityPortalDaysDayIndexed[$date]['day'] == $date ? $availabilityPortalDaysDayIndexed[$date] : array('day' => $date, 'available' => 0, 'bookings' => 0);
       $availabilityPropertyDay = isset($availabilityPropertyDaysDayIndexed[$date]) && $availabilityPropertyDaysDayIndexed[$date]['day'] == $date ? $availabilityPropertyDaysDayIndexed[$date] : array('day' => $date, 'available' => 0);
       $available = (int) $availabilityPortalDay['available'] - (int) $availabilityPortalDay['bookings'];
@@ -477,7 +478,7 @@ class Portal extends AbstractConnector {
    * @param  string $external_ref Booking external id
    * @param  string $external_id Booking external id
    * @param  string $options['status'] Booking status. Filter booking only if is one of the submitted status, can be multiple separated by comma (,). Values [prebooked,booked,cancelled]
-   * @return array 
+   * @return array
    */
   public function getBookingByExternalRefExternalId($external_ref, $external_id, $options = array()) {
     $params = array();
@@ -521,7 +522,7 @@ class Portal extends AbstractConnector {
   }
 
   /**
-   * Inserts booking card. To get fields, consult online documentation at  
+   * Inserts booking card. To get fields, consult online documentation at
    * https://hub.net2rent.com/doc/portal.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=portal1&pas=portal1&section=bookings&call=POST+%2Fbookings%2F%3Abooking_id%2Fcards%2F
    */
   public function insertBookingCard($bookingId, array $bookingCardOptions) {
@@ -531,12 +532,22 @@ class Portal extends AbstractConnector {
 
   /**
    * get bookingrequest by external ref and external id of the portal
-   * @param  string $external_ref Booking external id
+   * @param  string $external_ref Booking external ref
    * @param  string $external_id Booking external id
-   * @return array 
+   * @return array
    */
   public function getBookingRequestByExternalRefExternalId($external_ref, $external_id) {
     $endPoint = $this->getEndPoint('bookingrequest_external_ref_id', array($external_ref, $external_id));
+    return $this->api(sprintf($endPoint));
+  }
+
+  /**
+   * get bookingrequests by external id of the portal
+   * @param  string $external_id Booking external id
+   * @return array
+   */
+  public function getBookingRequestByExternalId($external_id) {
+    $endPoint = $this->getEndPoint('bookingrequest_external_id', array($external_id));
     return $this->api(sprintf($endPoint));
   }
 
@@ -554,7 +565,7 @@ class Portal extends AbstractConnector {
   }
 
   /**
-   * Inserts booking request card. To get fields, consult online documentation at  
+   * Inserts booking request card. To get fields, consult online documentation at
    * https://hub.net2rent.com/doc/portal.php?action=show_form&filteru=&apiurl=hub.net2rent.com&usr=portal1&pas=portal1&section=bookings&call=POST+%2Fbookings%2F%3Abookingrequests%2F%3Abookingrequest_id%2Fcards%2F
    */
   public function insertBookingRequestCard($bookingRequestId, array $bookingCardOptions) {

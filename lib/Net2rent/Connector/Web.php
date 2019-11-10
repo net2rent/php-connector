@@ -448,8 +448,11 @@ class Web extends AbstractConnector {
     $endPoint = $this->getEndPoint('booking_search');
     $booking = $this->api(sprintf($endPoint . '?ref_string=%s', urlencode($bookingRef)));
 
-    // only return booking if email or improve_form_token matches
-    if ($booking && !empty($booking) && ($booking[0]['contact_email'] == $emailToken || $booking[0]['improve_form_token'] == $emailToken)) {
+    $contactPhone = $booking && !empty($booking) ? str_replace(' ', '', $booking[0]['contact_phone']) : null;
+    $contactPhoneSearch = str_replace(' ', '', $emailToken);
+
+    // only return booking if email, improve_form_token or phone matches
+    if ($booking && !empty($booking) && ($booking[0]['contact_email'] == $emailToken || $booking[0]['improve_form_token'] == $emailToken ||  $contactPhone == $contactPhoneSearch)) {
       return $booking[0];
     }
     else {

@@ -498,6 +498,8 @@ abstract class AbstractConnector {
           'emissions_kg_co2_letter' => isset($typology['property_emissions_kg_co2_letter']) ? $typology['property_emissions_kg_co2_letter'] : '',
           'active_unexpired_promotions' => isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
           'agency_id' => isset($typology['agency_id']) ? $typology['agency_id'] : (isset($typology['prices_agency_id']) ? $typology['prices_agency_id'] : 0),
+          'agency_name' => isset($typology['agency_name']) ? $typology['agency_name'] : '',
+          'agency_merchant_name' => isset($typology['agency_merchant_name']) ? $typology['agency_merchant_name'] : '',
           'balcony' => isset($typology['balcony']) ? $typology['balcony'] : null,
           'terrace' => isset($typology['terrace']) ? $typology['terrace'] : null,
           'sea_distance' => isset($typology['sea_distance']) ? $typology['sea_distance'] : null,
@@ -803,6 +805,8 @@ abstract class AbstractConnector {
       'emissions_kg_co2_letter' => isset($typology['property_emissions_kg_co2_letter']) ? $typology['property_emissions_kg_co2_letter'] : '',
       'active_unexpired_promotions' => isset($typology['active_unexpired_promotions']) ? $typology['active_unexpired_promotions'] : 0,
       'agency_id' => isset($typology['agency_id']) ? $typology['agency_id'] : (isset($typology['prices_agency_id']) ? $typology['prices_agency_id'] : 0),
+      'agency_name' => isset($typology['agency_name']) ? $typology['agency_name'] : '',
+      'agency_merchant_name' => isset($typology['agency_merchant_name']) ? $typology['agency_merchant_name'] : '',
       'time_in' => isset($typology['time_in']) ? $typology['time_in'] : (isset($typology['time_in']) ? $typology['time_in'] : null),
       'time_out' => isset($typology['time_out']) ? $typology['time_out'] : (isset($typology['time_out']) ? $typology['time_out'] : null),
       'image' => (isset($typology['image_id'])) ? sprintf('%s/typologies/%s/images/%s/image.jpg?max_w=%s&max_h=%s&quality=%s', $this->apiBaseUrl, $typology['id'], $typology['image_id'], $params['max_w'], $params['max_h'], $params['quality']
